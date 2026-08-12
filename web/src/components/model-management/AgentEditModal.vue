@@ -1,5 +1,5 @@
 <script setup>
-import { computed, nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import {
   Bot,
@@ -13,11 +13,14 @@ import {
 } from 'lucide-vue-next'
 
 import { userApi } from '@/apis/user_api'
+import { agentApi } from '@/apis/agent_api'
 import AgentRuntimeConfigForm from '@/components/AgentRuntimeConfigForm.vue'
+import ModelSelectorComponent from '@/components/ModelSelectorComponent.vue'
 import ShareConfigForm from '@/components/ShareConfigForm.vue'
 import FallbackAvatar from '@/components/common/FallbackAvatar.vue'
 import { isBuiltinAgent, useAgentStore } from '@/stores/agent'
 import { useUserStore } from '@/stores/user'
+import { useConfigStore } from '@/stores/config'
 import { generatePixelAvatar } from '@/utils/pixelAvatar'
 import { MAX_IMAGE_UPLOAD_SIZE_BYTES, MAX_IMAGE_UPLOAD_SIZE_MB } from '@/utils/upload_limits'
 
@@ -29,6 +32,7 @@ const emit = defineEmits(['saved'])
 
 const userStore = useUserStore()
 const agentStore = useAgentStore()
+const configStore = useConfigStore()
 
 const DEFAULT_AGENT_BACKEND_ID = 'ChatbotAgent'
 const SUB_AGENT_BACKEND_ID = 'SubAgentBackend'
@@ -54,6 +58,9 @@ const agentForm = reactive({
   description: '',
   icon: ''
 })
+const createConfig = reactive({ model: '', system_prompt: '' })
+const createConfigurableItems = ref({})
+const loadingCreateConfig = ref(false)
 
 // 基本配置的原始基线，用于在标题栏显示「有修改」状态。slug / backend_id
 // 仅在创建模式可编辑，因此新建时不参与比对。
@@ -166,6 +173,26 @@ const runtimeConfigSegment = computed(() =>
 const isRuntimeAgentModalTab = (key) => runtimeAgentModalTabs.includes(key)
 const getDefaultBackendId = () => DEFAULT_AGENT_BACKEND_ID
 const isSubAgentBackend = (backendId) => backendId === SUB_AGENT_BACKEND_ID
+const defaultCreateModel = computed(() => configStore.config?.default_model || '')
+const defaultCreatePrompt = computed(
+  () => String(createConfigurableItems.value.system_prompt?.default || 'You are a helpful assistant.')
+)
+
+const loadCreateConfig = async (backendId = agentForm.backend_id) => {
+  loadingCreateConfig.value = true
+  try {
+    if (!configStore.config?.default_model) await configStore.refreshConfig()
+    const response = await agentApi.getAgentBackend(backendId)
+    createConfigurableItems.value = response.configurable_items || {}
+  } catch (error) {
+    createConfigurableItems.value = {}
+    message.error(error.message || '加载智能体默认配置失败')
+  } finally {
+    createConfig.model = defaultCreateModel.value
+    createConfig.system_prompt = defaultCreatePrompt.value
+    loadingCreateConfig.value = false
+  }
+}
 
 const getInitialShareConfig = () => ({
   version: 2,
@@ -231,6 +258,9 @@ const resetAgentForm = () => {
     ...defaults
   })
   agentShareConfig.value = getInitialShareConfig()
+  createConfigurableItems.value = {}
+  createConfig.model = defaultCreateModel.value
+  createConfig.system_prompt = 'You are a helpful assistant.'
 }
 
 const focusAgentNameInput = async () => {
@@ -257,7 +287,16 @@ const openCreate = () => {
   agentStore.resetAgentConfig()
   showAgentModal.value = true
   focusAgentNameInput()
+  loadCreateConfig()
 }
+
+watch(
+  () => agentForm.backend_id,
+  (backendId, previousBackendId) => {
+    if (!showAgentModal.value || editingAgentId.value || !backendId || backendId === previousBackendId) return
+    loadCreateConfig(backendId)
+  }
+)
 
 const openEdit = async (agent) => {
   const agentId = typeof agent === 'string' ? agent : agent?.id
@@ -340,8 +379,15 @@ const buildAgentPayload = () => {
   }
 
   if (!editingAgentId.value) {
+    const systemPrompt = createConfig.system_prompt.trim() || defaultCreatePrompt.value
     payload.slug = agentForm.slug.trim() || undefined
     payload.backend_id = agentForm.backend_id
+    payload.config_json = {
+      context: {
+        model: createConfig.model.trim() || defaultCreateModel.value,
+        system_prompt: systemPrompt
+      }
+    }
   }
 
   return payload
@@ -539,6 +585,32 @@ defineExpose({
                 placeholder="可选"
               />
             </label>
+          </div>
+
+          <div v-if="!editingAgentId" class="create-config-block">
+            <div class="section-heading">
+              <span>创建时配置</span>
+              <span class="section-heading-hint">创建后仍可继续调整</span>
+            </div>
+            <div class="create-config-grid">
+              <label class="form-label">
+                <span>模型</span>
+                <ModelSelectorComponent
+                  :model_spec="createConfig.model"
+                  :disabled="loadingCreateConfig"
+                  @select-model="createConfig.model = $event"
+                />
+              </label>
+              <label class="form-label full-width">
+                <span>系统提示词</span>
+                <a-textarea
+                  v-model:value="createConfig.system_prompt"
+                  :rows="6"
+                  :placeholder="defaultCreatePrompt"
+                  class="agent-system-prompt-textarea"
+                />
+              </label>
+            </div>
           </div>
 
           <div v-if="canEditAgentShareConfig" class="share-config-block">
@@ -1005,6 +1077,42 @@ defineExpose({
   margin-top: 22px;
   padding-top: 18px;
   border-top: 1px solid var(--gray-150);
+}
+
+.create-config-block {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--gray-150);
+}
+
+.create-config-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+.section-heading-hint {
+  color: var(--gray-500);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.agent-system-prompt-textarea {
+  min-height: 140px;
+  padding: 10px 12px;
+  border-color: var(--gray-200);
+  border-radius: 8px;
+  background: var(--gray-10);
+  color: var(--gray-900);
+  font-size: 13px;
+  line-height: 1.6;
+  resize: vertical;
+
+  &:focus {
+    border-color: var(--main-300);
+    background: var(--gray-0);
+    box-shadow: 0 0 0 3px var(--main-50);
+  }
 }
 
 .modal-form {

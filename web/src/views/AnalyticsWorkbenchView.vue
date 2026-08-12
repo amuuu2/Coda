@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
-import { Database, Play, Plus, RefreshCw, Save, ShieldCheck, Table2, Trash2, Wifi } from 'lucide-vue-next'
+import { Database, Play, Plus, RefreshCw, Save, ShieldCheck, Table2, Trash2, Wifi, X } from 'lucide-vue-next'
 import { message } from 'ant-design-vue'
 
 import { analyticsApi } from '@/apis/analytics_api'
@@ -14,6 +14,7 @@ const loading = ref(true)
 const error = ref('')
 const saving = ref(false)
 const actionId = ref('')
+const showSourceForm = ref(false)
 
 const emptySource = () => ({
   name: '',
@@ -47,7 +48,16 @@ const load = async () => {
     const [sourceResponse, queryResponse] = await Promise.all([analyticsApi.listDataSources(), analyticsApi.listQueries()])
     sources.value = sourceResponse.data_sources || []
     queries.value = queryResponse.queries || []
-    if (!selectedSourceId.value && sources.value[0]) await selectSource(sources.value[0])
+    if (selectedSourceId.value) {
+      const source = sources.value.find((item) => item.id === selectedSourceId.value)
+      if (source) await selectSource(source, false)
+      else {
+        selectedSourceId.value = null
+        queryForm.data_source_id = ''
+        schemaTables.value = []
+        showSourceForm.value = false
+      }
+    }
   } catch (requestError) {
     error.value = requestError.message || '数据分析工作台加载失败'
   } finally {
@@ -55,9 +65,10 @@ const load = async () => {
   }
 }
 
-const selectSource = async (source) => {
+const selectSource = async (source, openForm = true) => {
   selectedSourceId.value = source.id
   queryForm.data_source_id = source.id
+  if (openForm) showSourceForm.value = true
   Object.assign(sourceForm, { ...emptySource(), ...source, table_allowlist: (source.table_allowlist || []).join(', ') })
   try {
     const response = await analyticsApi.listSchema(source.id)
@@ -91,11 +102,17 @@ const saveSource = async () => {
   }
 }
 
-const resetSource = () => {
+const openNewSource = () => {
   selectedSourceId.value = null
   schemaTables.value = []
-  Object.assign(sourceForm, emptySource())
+  selectedQuery.value = null
   queryForm.data_source_id = ''
+  Object.assign(sourceForm, emptySource())
+  showSourceForm.value = true
+}
+
+const closeSourceForm = () => {
+  showSourceForm.value = false
 }
 
 const testSource = async (source) => {
@@ -129,7 +146,13 @@ const removeSource = async (source) => {
   try {
     await analyticsApi.deleteDataSource(source.id)
     sources.value = sources.value.filter((item) => item.id !== source.id)
-    if (selectedSourceId.value === source.id) resetSource()
+    if (selectedSourceId.value === source.id) {
+      selectedSourceId.value = null
+      schemaTables.value = []
+      selectedQuery.value = null
+      queryForm.data_source_id = ''
+      showSourceForm.value = false
+    }
     message.success('数据源已删除')
   } catch (requestError) {
     message.error(requestError.message || '数据源删除失败')
@@ -176,7 +199,7 @@ onMounted(load)
         <h1>数据分析工作台</h1>
         <p class="enterprise-page__subhead">从白名单 Schema 到可审计 SQL，每次提问都留下可复核的证据链。</p>
       </div>
-      <div class="enterprise-page__actions"><button type="button" class="enterprise-button" :disabled="loading" @click="load"><RefreshCw :size="15" /> 刷新</button><button type="button" class="enterprise-button enterprise-button--primary" @click="resetSource"><Plus :size="15" /> 新建数据源</button></div>
+      <div class="enterprise-page__actions"><button type="button" class="enterprise-button" :disabled="loading" @click="load"><RefreshCw :size="15" /> 刷新</button><button type="button" class="enterprise-button enterprise-button--primary" @click="openNewSource"><Plus :size="15" /> 新建数据源</button></div>
     </header>
 
     <div class="enterprise-metrics"><div class="enterprise-metric"><span class="enterprise-metric__label">数据源</span><strong class="enterprise-metric__value">{{ sources.length }}</strong></div><div class="enterprise-metric"><span class="enterprise-metric__label">已同步表</span><strong class="enterprise-metric__value">{{ schemaTables.length }}</strong></div><div class="enterprise-metric"><span class="enterprise-metric__label">查询总数</span><strong class="enterprise-metric__value">{{ queries.length }}</strong></div><div class="enterprise-metric"><span class="enterprise-metric__label">成功查询</span><strong class="enterprise-metric__value">{{ successCount }}</strong></div></div>
@@ -185,11 +208,11 @@ onMounted(load)
     <div v-else-if="error" class="enterprise-error">{{ error }}<button type="button" class="enterprise-button" @click="load">重试</button></div>
     <div v-else class="enterprise-workspace">
       <section class="enterprise-section">
-        <div class="enterprise-section__head"><h2>数据源</h2><span class="enterprise-status">{{ sources.length }} 项</span></div>
-        <div class="enterprise-section__body">
+        <div class="enterprise-section__head"><h2>数据源</h2><div class="enterprise-inline-actions"><span class="enterprise-status">{{ sources.length }} 项</span><button v-if="showSourceForm" type="button" class="enterprise-button enterprise-button--quiet" aria-label="收起数据源表单" @click="closeSourceForm"><X :size="14" /> 收起</button></div></div>
+        <div v-if="showSourceForm" class="enterprise-section__body">
           <form class="enterprise-form" @submit.prevent="saveSource">
             <div class="enterprise-form__grid"><div class="enterprise-field"><label for="source-name">名称</label><input id="source-name" v-model="sourceForm.name" required /></div><div class="enterprise-field"><label for="source-type">类型</label><select id="source-type" v-model="sourceForm.db_type"><option value="postgresql">PostgreSQL</option><option value="mysql">MySQL</option></select></div><div class="enterprise-field"><label for="source-host">主机</label><input id="source-host" v-model="sourceForm.host" required /></div><div class="enterprise-field"><label for="source-port">端口</label><input id="source-port" v-model.number="sourceForm.port" type="number" min="1" max="65535" /></div><div class="enterprise-field"><label for="source-database">数据库</label><input id="source-database" v-model="sourceForm.database_name" required /></div><div class="enterprise-field"><label for="source-username">用户名</label><input id="source-username" v-model="sourceForm.username" required /></div><div class="enterprise-field"><label for="source-password">密码</label><input id="source-password" v-model="sourceForm.password" type="password" autocomplete="new-password" placeholder="仅在变更时填写" /></div><div class="enterprise-field"><label for="source-password-env">密码环境变量</label><input id="source-password-env" v-model="sourceForm.password_env" placeholder="可选" /></div><div class="enterprise-field enterprise-field--wide"><label for="source-allowlist">表白名单</label><input id="source-allowlist" v-model="sourceForm.table_allowlist" placeholder="public.orders, public.sales" /></div></div>
-            <div class="enterprise-inline-actions"><button type="submit" class="enterprise-button enterprise-button--primary" :disabled="saving"><Save :size="14" /> {{ saving ? '保存中' : '保存数据源' }}</button><button type="button" class="enterprise-button" @click="resetSource">清空</button></div>
+            <div class="enterprise-inline-actions"><button type="submit" class="enterprise-button enterprise-button--primary" :disabled="saving"><Save :size="14" /> {{ saving ? '保存中' : '保存数据源' }}</button><button type="button" class="enterprise-button" @click="openNewSource">清空</button></div>
           </form>
         </div>
         <div v-if="!sources.length" class="enterprise-empty">还没有数据源。</div>
@@ -200,11 +223,14 @@ onMounted(load)
 
       <section class="enterprise-section">
         <div class="enterprise-section__head"><h2>提问与结果</h2><span v-if="selectedSource" class="enterprise-status enterprise-status--enabled"><ShieldCheck :size="14" /> {{ selectedSource.name }}</span></div>
-        <div class="enterprise-section__body">
-          <form class="enterprise-form" @submit.prevent="runQuery"><div class="enterprise-field"><label for="query-question">自然语言问题</label><textarea id="query-question" v-model="queryForm.question" placeholder="最近一周各区域收入和订单数是多少？" required /></div><div class="enterprise-field"><label for="query-sql">SQL（可选，提交前仍会通过 AST 和白名单校验）</label><textarea id="query-sql" v-model="queryForm.sql" class="enterprise-code" placeholder="留空由分析模型生成 SQL" /></div><div class="enterprise-inline-actions"><button type="submit" class="enterprise-button enterprise-button--primary" :disabled="saving || !queryForm.data_source_id || !queryForm.question.trim()"><Play :size="14" /> {{ saving ? '查询中' : '运行查询' }}</button><span v-if="!selectedSource" class="enterprise-status">先选择数据源</span></div></form>
+        <div v-if="!selectedSource" class="enterprise-empty analytics-empty-state">选择一个数据源后开始提问。</div>
+        <template v-else>
+          <div class="enterprise-section__body">
+          <form class="enterprise-form" @submit.prevent="runQuery"><div class="enterprise-field"><label for="query-question">自然语言问题</label><textarea id="query-question" v-model="queryForm.question" placeholder="最近一周各区域收入和订单数是多少？" required /></div><div class="enterprise-field"><label for="query-sql">SQL（可选，提交前仍会通过 AST 和白名单校验）</label><textarea id="query-sql" v-model="queryForm.sql" class="enterprise-code" placeholder="留空由分析模型生成 SQL" /></div><div class="enterprise-inline-actions"><button type="submit" class="enterprise-button enterprise-button--primary" :disabled="saving || !queryForm.data_source_id || !queryForm.question.trim()"><Play :size="14" /> {{ saving ? '查询中' : '运行查询' }}</button></div></form>
           <div v-if="selectedQuery" class="analytics-result"><div class="enterprise-detail-grid"><div class="enterprise-detail-cell"><span class="enterprise-detail-cell__label">状态</span><strong class="enterprise-detail-cell__value"><span :class="statusClass(selectedQuery.status)">{{ selectedQuery.status }}</span></strong></div><div class="enterprise-detail-cell"><span class="enterprise-detail-cell__label">行数</span><strong class="enterprise-detail-cell__value">{{ selectedQuery.row_count }}</strong></div><div class="enterprise-detail-cell"><span class="enterprise-detail-cell__label">耗时</span><strong class="enterprise-detail-cell__value">{{ selectedQuery.duration_ms }} ms</strong></div><div class="enterprise-detail-cell"><span class="enterprise-detail-cell__label">结论</span><strong class="enterprise-detail-cell__value">{{ selectedQuery.conclusion || selectedQuery.error_message }}</strong></div></div><pre class="enterprise-code">{{ selectedQuery.sql_text }}</pre><div v-if="chartPoints.length" class="analytics-chart"><div v-for="point in chartPoints" :key="point.label" class="analytics-chart__item"><span class="analytics-chart__label">{{ point.label }}</span><span class="analytics-chart__bar" :style="{ width: `${Math.max(4, point.value / maxChartValue * 100)}%` }" /><strong>{{ point.value }}</strong></div></div><div class="enterprise-table-wrap"><table class="enterprise-table"><thead><tr><th v-for="column in selectedQuery.columns" :key="column">{{ column }}</th></tr></thead><tbody><tr v-for="(row, rowIndex) in selectedQuery.rows" :key="rowIndex"><td v-for="column in selectedQuery.columns" :key="column">{{ row[column] }}</td></tr></tbody></table></div></div><div v-else class="enterprise-empty">提交问题后，SQL、表格、图表和结论会在这里出现。</div>
-        </div>
-        <div class="analytics-schema"><div class="enterprise-section__head"><h2><Table2 :size="15" /> Schema 白名单</h2><span v-if="selectedSource" class="enterprise-status">{{ schemaTables.length }} 张表</span></div><div v-if="!schemaTables.length" class="enterprise-empty">尚未同步 Schema。</div><div v-else class="enterprise-table-wrap"><table class="enterprise-table"><thead><tr><th>表</th><th>列</th><th>状态</th></tr></thead><tbody><tr v-for="table in schemaTables" :key="table.id"><td>{{ table.schema_name }}.{{ table.table_name }}</td><td>{{ table.columns?.map((column) => column.name).join(', ') }}</td><td><span :class="statusClass(table.is_allowed ? 'enabled' : 'disabled')">{{ table.is_allowed ? '允许' : '拒绝' }}</span></td></tr></tbody></table></div></div>
+          </div>
+          <div class="analytics-schema"><div class="enterprise-section__head"><h2><Table2 :size="15" /> Schema 白名单</h2><span class="enterprise-status">{{ schemaTables.length }} 张表</span></div><div v-if="!schemaTables.length" class="enterprise-empty">尚未同步 Schema。</div><div v-else class="enterprise-table-wrap"><table class="enterprise-table"><thead><tr><th>表</th><th>列</th><th>状态</th></tr></thead><tbody><tr v-for="table in schemaTables" :key="table.id"><td>{{ table.schema_name }}.{{ table.table_name }}</td><td>{{ table.columns?.map((column) => column.name).join(', ') }}</td><td><span :class="statusClass(table.is_allowed ? 'enabled' : 'disabled')">{{ table.is_allowed ? '允许' : '拒绝' }}</span></td></tr></tbody></table></div></div>
+        </template>
       </section>
     </div>
 
@@ -219,6 +245,15 @@ onMounted(load)
   display: flex;
   align-items: center;
   gap: 7px;
+}
+
+.analytics-empty-state {
+  display: flex;
+  min-height: 220px;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  text-align: center;
 }
 
 .analytics-result {

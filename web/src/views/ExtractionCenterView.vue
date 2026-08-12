@@ -18,6 +18,8 @@ const loading = ref(true)
 const error = ref('')
 const saving = ref(false)
 const actionId = ref('')
+const showForm = ref(false)
+const formMode = ref('batch')
 
 const newTemplate = () => ({
   name: '',
@@ -62,6 +64,8 @@ const load = async () => {
 
 const editTemplate = (template) => {
   editingTemplateId.value = template.id
+  formMode.value = 'template'
+  showForm.value = true
   Object.assign(templateForm, {
     ...template,
     schema_json: JSON.stringify(template.schema_json || {}, null, 2),
@@ -73,7 +77,16 @@ const editTemplate = (template) => {
 
 const resetTemplate = () => {
   editingTemplateId.value = null
+  formMode.value = 'template'
+  showForm.value = true
+  activeTab.value = 'templates'
   Object.assign(templateForm, newTemplate())
+}
+
+const openBatchForm = () => {
+  formMode.value = 'batch'
+  showForm.value = true
+  activeTab.value = 'batches'
 }
 
 const saveTemplate = async () => {
@@ -232,7 +245,7 @@ onMounted(load)
       </div>
       <div class="enterprise-page__actions">
         <button type="button" class="enterprise-button" :disabled="loading" @click="load"><RefreshCw :size="15" /> 刷新</button>
-        <button type="button" class="enterprise-button enterprise-button--primary" @click="activeTab = 'templates'; resetTemplate()"><Plus :size="15" /> 新建模板</button>
+        <button type="button" class="enterprise-button enterprise-button--primary" @click="resetTemplate"><Plus :size="15" /> 新建模板</button>
       </div>
     </header>
 
@@ -247,9 +260,9 @@ onMounted(load)
     <div v-else-if="error" class="enterprise-error">{{ error }}<button type="button" class="enterprise-button" @click="load">重试</button></div>
     <div v-else class="enterprise-workspace">
       <section class="enterprise-section">
-        <div class="enterprise-section__head"><h2>抽取对象</h2><div class="enterprise-inline-actions"><button type="button" class="enterprise-button enterprise-button--quiet" :class="{ 'is-active': activeTab === 'batches' }" @click="activeTab = 'batches'"><ScanText :size="14" /> 批次</button><button type="button" class="enterprise-button enterprise-button--quiet" :class="{ 'is-active': activeTab === 'templates' }" @click="activeTab = 'templates'"><FileCheck2 :size="14" /> 模板</button></div></div>
+        <div class="enterprise-section__head"><h2>抽取对象</h2><div class="enterprise-inline-actions"><button type="button" class="enterprise-button enterprise-button--quiet" :class="{ 'is-active': activeTab === 'batches' }" @click="activeTab = 'batches'; showForm = false"><ScanText :size="14" /> 批次</button><button type="button" class="enterprise-button enterprise-button--quiet" :class="{ 'is-active': activeTab === 'templates' }" @click="activeTab = 'templates'; showForm = false"><FileCheck2 :size="14" /> 模板</button><button v-if="activeTab === 'batches'" type="button" class="enterprise-button enterprise-button--primary" @click="openBatchForm"><Plus :size="14" /> 新建批次</button><button v-else type="button" class="enterprise-button enterprise-button--primary" @click="resetTemplate"><Plus :size="14" /> 新建模板</button></div></div>
         <div v-if="activeTab === 'batches'">
-          <div class="enterprise-section__body extraction-create">
+          <div v-if="showForm && formMode === 'batch'" class="enterprise-section__body extraction-create">
             <div class="enterprise-form__grid">
               <div class="enterprise-field"><label for="batch-template">模板</label><select id="batch-template" v-model="batchForm.template_id"><option value="" disabled>选择模板</option><option v-for="template in templates" :key="template.id" :value="template.id">{{ template.name }} · v{{ template.version }}</option></select></div>
               <div class="enterprise-field"><label for="batch-kb">上传到知识库</label><select id="batch-kb" v-model="batchForm.kb_id"><option value="" disabled>选择知识库</option><option v-for="knowledgeBase in knowledgeBases" :key="knowledgeBase.kb_id" :value="knowledgeBase.kb_id">{{ knowledgeBase.name }}</option></select></div>
@@ -263,7 +276,7 @@ onMounted(load)
             <button v-for="batch in batches" :key="batch.id" type="button" class="enterprise-list__item" :class="{ 'is-selected': selectedBatch?.id === batch.id }" @click="selectBatch(batch)"><div><div class="enterprise-list__title">{{ batch.id }}</div><div class="enterprise-list__meta">{{ batch.succeeded_count }}/{{ batch.total_count }} 完成 · {{ batch.created_at }}</div></div><span :class="statusClass(batch.status)">{{ batch.status }}</span></button>
           </div>
         </div>
-        <div v-else class="enterprise-section__body">
+        <div v-else-if="showForm && formMode === 'template'" class="enterprise-section__body">
           <form class="enterprise-form" @submit.prevent="saveTemplate">
             <div class="enterprise-form__grid"><div class="enterprise-field"><label for="template-name">模板名称</label><input id="template-name" v-model="templateForm.name" required /></div><div class="enterprise-field"><label for="template-version">版本</label><input id="template-version" v-model.number="templateForm.version" type="number" min="1" /></div><div class="enterprise-field enterprise-field--wide"><label for="template-schema">JSON Schema</label><textarea id="template-schema" v-model="templateForm.schema_json" class="enterprise-tall-input" required /></div><div class="enterprise-field enterprise-field--wide"><label for="template-descriptions">字段说明 JSON</label><textarea id="template-descriptions" v-model="templateForm.field_descriptions" /></div><div class="enterprise-field"><label for="template-required">必填字段</label><input id="template-required" v-model="templateForm.required_fields" placeholder="字段名，逗号分隔" /></div><div class="enterprise-field"><label for="template-prompt">提示词</label><input id="template-prompt" v-model="templateForm.prompt" /></div></div>
             <div class="enterprise-inline-actions"><button type="submit" class="enterprise-button enterprise-button--primary" :disabled="saving"><Save :size="14" /> {{ saving ? '保存中' : '保存模板' }}</button><button type="button" class="enterprise-button" @click="resetTemplate">清空</button></div>

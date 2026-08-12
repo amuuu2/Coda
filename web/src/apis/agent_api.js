@@ -57,6 +57,8 @@ export const agentApi = {
 
   getAgentBackends: () => apiGet('/api/agent/backends'),
 
+  getAgentBackend: (backendId) => apiGet(`/api/agent/backends/${backendId}`),
+
   /**
    * 获取单个智能体详情
    * @param {string} agentId - 智能体ID

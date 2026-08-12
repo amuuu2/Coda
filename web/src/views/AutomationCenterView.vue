@@ -14,12 +14,14 @@ const loading = ref(true)
 const error = ref('')
 const saving = ref(false)
 const actionId = ref('')
+const showForm = ref(false)
+const SHANGHAI_TIMEZONE = 'Asia/Shanghai'
 
 const emptyForm = () => ({
   name: '',
   description: '',
   cron_expression: '0 9 * * 1',
-  timezone: 'Asia/Shanghai',
+  timezone: SHANGHAI_TIMEZONE,
   agent_slug: '',
   prompt: '生成经营周报，汇总关键指标、异常和行动建议。',
   knowledge_base_ids: [],
@@ -43,6 +45,7 @@ const resetForm = () => {
   Object.assign(form, emptyForm())
   if (agents.value[0]) form.agent_slug = agents.value[0].slug
   editingId.value = null
+  showForm.value = true
 }
 
 const load = async () => {
@@ -52,7 +55,6 @@ const load = async () => {
     const [scheduleResponse, agentResponse] = await Promise.all([automationApi.listSchedules(), agentApi.getAgents()])
     schedules.value = scheduleResponse.schedules || []
     agents.value = agentResponse.agents || []
-    if (!selectedId.value && schedules.value[0]) selectSchedule(schedules.value[0])
     if (!form.agent_slug && agents.value[0]) form.agent_slug = agents.value[0].slug
   } catch (requestError) {
     error.value = requestError.message || '自动化任务加载失败'
@@ -64,8 +66,10 @@ const load = async () => {
 const selectSchedule = async (schedule) => {
   selectedId.value = schedule.id
   editingId.value = schedule.id
+  showForm.value = true
   Object.assign(form, {
     ...schedule,
+    timezone: SHANGHAI_TIMEZONE,
     knowledge_base_ids: schedule.knowledge_base_ids || [],
     skill_slugs: schedule.skill_slugs || [],
     mcp_server_slugs: schedule.mcp_server_slugs || [],
@@ -84,6 +88,7 @@ const save = async () => {
   try {
     const payload = {
       ...form,
+      timezone: SHANGHAI_TIMEZONE,
       knowledge_base_ids: form.knowledge_base_ids.filter(Boolean),
       skill_slugs: form.skill_slugs.filter(Boolean),
       mcp_server_slugs: form.mcp_server_slugs.filter(Boolean)
@@ -144,7 +149,10 @@ const remove = async (schedule) => {
     if (selectedId.value === schedule.id) {
       selectedId.value = null
       runs.value = []
-      resetForm()
+      Object.assign(form, emptyForm())
+      if (agents.value[0]) form.agent_slug = agents.value[0].slug
+      editingId.value = null
+      showForm.value = false
     }
     message.success('任务已停用')
   } catch (requestError) {
@@ -205,7 +213,7 @@ onMounted(load)
           >
             <div>
               <div class="enterprise-list__title">{{ schedule.name }}</div>
-              <div class="enterprise-list__meta">{{ schedule.cron_expression }} · {{ schedule.timezone }} · {{ schedule.agent_slug }}</div>
+              <div class="enterprise-list__meta">{{ schedule.cron_expression }} · {{ SHANGHAI_TIMEZONE }} · {{ schedule.agent_slug }}</div>
             </div>
             <div class="enterprise-inline-actions">
               <span :class="statusClass(schedule.status)">{{ schedule.status === 'enabled' ? '已启用' : '已暂停' }}</span>
@@ -216,7 +224,7 @@ onMounted(load)
         </div>
       </section>
 
-      <section class="enterprise-section">
+      <section v-if="showForm" class="enterprise-section">
         <div class="enterprise-section__head">
           <h2>{{ editingId ? '编辑任务' : '新建任务' }}</h2>
           <button v-if="editingId" type="button" class="enterprise-button enterprise-button--quiet" @click="resetForm"><Plus :size="14" /> 新建</button>
@@ -227,7 +235,6 @@ onMounted(load)
               <div class="enterprise-field"><label for="schedule-name">任务名称</label><input id="schedule-name" v-model="form.name" required /></div>
               <div class="enterprise-field"><label for="schedule-agent">Agent</label><select id="schedule-agent" v-model="form.agent_slug" required><option value="" disabled>选择 Agent</option><option v-for="agent in agents" :key="agent.slug" :value="agent.slug">{{ agent.name }} · {{ agent.slug }}</option></select></div>
               <div class="enterprise-field"><label for="schedule-cron">Cron</label><input id="schedule-cron" v-model="form.cron_expression" required /></div>
-              <div class="enterprise-field"><label for="schedule-timezone">时区</label><input id="schedule-timezone" v-model="form.timezone" required /></div>
               <div class="enterprise-field"><label for="schedule-format">输出格式</label><select id="schedule-format" v-model="form.output_config.format"><option value="markdown">Markdown</option><option value="html">HTML</option><option value="pdf">PDF</option></select></div>
               <div class="enterprise-field"><label for="schedule-retries">失败重试次数</label><input id="schedule-retries" v-model.number="form.max_retries" type="number" min="0" max="3" /></div>
               <div class="enterprise-field enterprise-field--wide"><label for="schedule-prompt">提示词</label><textarea id="schedule-prompt" v-model="form.prompt" required /></div>
