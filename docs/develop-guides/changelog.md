@@ -11,6 +11,7 @@
 - 移除自动化中心、结构化文档抽取和数据分析工作台及其专属后端、Migration 与测试，避免独立配置链造成体验割裂；保留 Coda 原有 AgentRun、Skills、MCP、子 Agent、知识库、评估能力和通用的 Agent 创建配置增强。
 
 - 新增 Agent 质量评测与自优化闭环：从真实 AgentRun 建立 Replay 样本，使用基线/候选回放实验比较 Prompt、模型和 Skill 配置，经人工批准后发布并支持回滚；新增质量表 Migration、API、Agent 管理页和未运行测试，不新增第三方依赖。
+- 修复质量闭环 Migration 脚本从绝对路径启动时无法导入 `migrations` 包的问题。
 
 ::: warning 升级提醒
 升级到 v0.7.2 后，管理员此前创建的 stdio MCP 会被禁用，也无法重新启用。请在详情页迁移为 SSE 或 Streamable HTTP，或直接删除；代码内置的系统 stdio MCP 不受影响。
