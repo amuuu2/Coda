@@ -1,0 +1,5 @@
+<svg width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Coda" xmlns="http://www.w3.org/2000/svg">
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="#145C56"/>
+  <path d="M91 38A36 36 0 1 0 91 90" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="99" cy="28" r="8" fill="#F2B84B"/>
+</svg>
