@@ -113,17 +113,7 @@ async def lifespan(app: FastAPI):
     print("LangGraph Checkpoint tables verified/created!")
 
     await tasker.start()
-    logger.info(f"""
-
-░██     ░██                       ░██
- ░██   ░██
-  ░██ ░██   ░██    ░██ ░██    ░██ ░██
-   ░████    ░██    ░██  ░██  ░██  ░██
-    ░██     ░██    ░██   ░█████   ░██
-    ░██     ░██   ░███  ░██  ░██  ░██
-    ░██      ░█████░██ ░██    ░██ ░██  v{get_version()}
-
-    """)
+    logger.info(f"\nCoda v{get_version()}\n")
     logger.info("Coda backend startup complete")
     yield
     await tasker.shutdown()

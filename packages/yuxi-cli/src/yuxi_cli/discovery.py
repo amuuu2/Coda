@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from packaging.version import InvalidVersion, Version
 
-MIN_SERVER_VERSION = "0.7.1"
+MIN_SERVER_VERSION = "0.1.1"
 
 
 class ServerCompatibilityError(Exception):

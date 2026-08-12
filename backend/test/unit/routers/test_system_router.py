@@ -10,7 +10,7 @@ pytestmark = pytest.mark.unit
 
 
 def test_discovery_endpoint_is_public(monkeypatch):
-    monkeypatch.setattr("server.routers.system_router.get_version", lambda: "0.7.1.dev0")
+    monkeypatch.setattr("server.routers.system_router.get_version", lambda: "0.1.1.dev0")
 
     app = FastAPI()
     app.include_router(system, prefix="/api")
@@ -19,7 +19,7 @@ def test_discovery_endpoint_is_public(monkeypatch):
     assert response.status_code == 200
     payload = response.json()
     assert payload["name"] == "Coda"
-    assert payload["version"] == "0.7.1.dev0"
+    assert payload["version"] == "0.1.1.dev0"
     assert payload["api_prefix"] == "/api"
     assert payload["capabilities"]["cli"]["browser_login"] is True
     assert payload["capabilities"]["cli"]["api_key_auth"] is True

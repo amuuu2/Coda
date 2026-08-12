@@ -24,7 +24,7 @@ class FakeClient:
 
     def discovery(self):
         return {
-            "version": "0.7.1",
+            "version": "0.1.1",
             "capabilities": {
                 "cli": {
                     "browser_login": True,
@@ -115,7 +115,7 @@ def test_login_rejects_unsupported_server_version(tmp_path):
     class OldServerClient(FakeClient):
         def discovery(self):
             return {
-                "version": "0.7.0",
+                "version": "0.1.0",
                 "capabilities": {
                     "cli": {
                         "browser_login": True,
@@ -126,7 +126,7 @@ def test_login_rejects_unsupported_server_version(tmp_path):
 
     store = ConfigStore(tmp_path / "config.toml")
 
-    with pytest.raises(CommandError, match="低于 CLI 要求 0.7.1"):
+    with pytest.raises(CommandError, match="低于 CLI 要求 0.1.1"):
         login_with_api_key(store, None, "yxkey_existing", _console(), client_factory=OldServerClient)
 
 

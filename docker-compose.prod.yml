@@ -34,7 +34,7 @@ services:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
-    image: yuxi-api:${YUXI_VERSION:-0.7.1}
+    image: coda-api:${CODA_VERSION:-0.1.1}
     container_name: api-prod
     working_dir: /app
     networks:
@@ -74,7 +74,7 @@ services:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
-    image: yuxi-api:${YUXI_VERSION:-0.7.1}
+    image: coda-api:${CODA_VERSION:-0.1.1}
     container_name: worker-prod
     working_dir: /app
     networks:
@@ -106,6 +106,7 @@ services:
     build:
       context: ./docker/sandbox_provisioner
       dockerfile: Dockerfile
+    image: coda-sandbox-provisioner:${CODA_VERSION:-0.1.1}
     container_name: sandbox-provisioner
     volumes:
       - ./docker/volumes/yuxi:/app/saves
@@ -154,7 +155,7 @@ services:
       context: .
       dockerfile: docker/web.Dockerfile
       target: production
-    image: yuxi-web:${YUXI_VERSION:-0.7.1}
+    image: coda-web:${CODA_VERSION:-0.1.1}
     container_name: web-prod
     ports:
       - "80:80"
