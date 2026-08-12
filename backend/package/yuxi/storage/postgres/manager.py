@@ -19,7 +19,7 @@ from yuxi.utils.singleton import SingletonMeta
 CombinedBase = declarative_base()
 
 MIGRATED_ENTERPRISE_TABLES = {
-    table.__tablename__
+    table.name
     for table in (
         _models_enterprise.ScheduledAgentTask.__table__,
         _models_enterprise.ScheduledAgentRun.__table__,
