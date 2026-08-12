@@ -11,32 +11,12 @@ from sqlalchemy.orm import declarative_base
 from yuxi.storage.postgres.models_business import AGENT_RUN_TERMINAL_STATUSES
 from yuxi.storage.postgres.models_business import Base as BusinessBase
 from yuxi.storage.postgres.models_knowledge import Base as KnowledgeBase
-from yuxi.storage.postgres import models_enterprise as _models_enterprise
 from yuxi.utils import logger
 from yuxi.utils.singleton import SingletonMeta
 
 # 合并两个 Base
 CombinedBase = declarative_base()
 
-MIGRATED_ENTERPRISE_TABLES = {
-    table.name
-    for table in (
-        _models_enterprise.ScheduledAgentTask.__table__,
-        _models_enterprise.ScheduledAgentRun.__table__,
-        _models_enterprise.ExtractionTemplate.__table__,
-        _models_enterprise.ExtractionBatch.__table__,
-        _models_enterprise.ExtractionTask.__table__,
-        _models_enterprise.ExtractionResultRevision.__table__,
-        _models_enterprise.AnalyticsDataSource.__table__,
-        _models_enterprise.AnalyticsSchemaTable.__table__,
-        _models_enterprise.AnalyticsQueryAudit.__table__,
-    )
-}
-
-
-def _legacy_business_tables() -> list:
-    """返回仍由历史启动兼容逻辑管理的表，排除显式 Migration 表。"""
-    return [table for table in BusinessBase.metadata.sorted_tables if table.name not in MIGRATED_ENTERPRISE_TABLES]
 AGENT_RUN_TERMINAL_STATUS_SQL = ", ".join(f"'{status}'" for status in AGENT_RUN_TERMINAL_STATUSES)
 
 # 继承所有表
@@ -124,7 +104,7 @@ class PostgresManager(metaclass=SingletonMeta):
             await conn.run_sync(
                 lambda sync_conn: KnowledgeBase.metadata.create_all(
                     sync_conn,
-                    tables=_legacy_business_tables(),
+                    tables=BusinessBase.metadata.sorted_tables,
                 )
             )
         logger.info("PostgreSQL tables created/checked (knowledge + business)")
@@ -136,7 +116,7 @@ class PostgresManager(metaclass=SingletonMeta):
             await conn.run_sync(
                 lambda sync_conn: BusinessBase.metadata.create_all(
                     sync_conn,
-                    tables=_legacy_business_tables(),
+                    tables=BusinessBase.metadata.sorted_tables,
                 )
             )
         logger.info("PostgreSQL business tables created/checked")

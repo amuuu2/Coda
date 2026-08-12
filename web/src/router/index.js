@@ -98,45 +98,6 @@ const router = createRouter({
       ]
     },
     {
-      path: '/automation',
-      name: 'automation',
-      component: AppLayout,
-      children: [
-        {
-          path: '',
-          name: 'AutomationCenterComp',
-          component: () => import('../views/AutomationCenterView.vue'),
-          meta: { keepAlive: false, requiresAuth: true }
-        }
-      ]
-    },
-    {
-      path: '/extraction',
-      name: 'extraction',
-      component: AppLayout,
-      children: [
-        {
-          path: '',
-          name: 'ExtractionCenterComp',
-          component: () => import('../views/ExtractionCenterView.vue'),
-          meta: { keepAlive: false, requiresAuth: true }
-        }
-      ]
-    },
-    {
-      path: '/analytics',
-      name: 'analytics',
-      component: AppLayout,
-      children: [
-        {
-          path: '',
-          name: 'AnalyticsWorkbenchComp',
-          component: () => import('../views/AnalyticsWorkbenchView.vue'),
-          meta: { keepAlive: false, requiresAuth: true }
-        }
-      ]
-    },
-    {
       path: '/extensions',
       name: 'extensions',
       component: AppLayout,

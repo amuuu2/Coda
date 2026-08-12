@@ -10,8 +10,6 @@ from langchain.messages import AIMessage, HumanMessage
 from yuxi.agents import context as agent_context
 from yuxi.agents.backends.sandbox import paths as workspace_paths
 from yuxi.services import chat_service as svc
-from yuxi.services.agent_request_queue_service import _build_message_metadata
-from yuxi.services.input_message_service import build_chat_input_message
 
 
 def _empty_agent_context(_thread_id: str, _uid: str) -> str:
@@ -20,30 +18,6 @@ def _empty_agent_context(_thread_id: str, _uid: str) -> str:
 
 async def _fake_normalize_agent_context_config(context, **_kwargs):
     return dict(context or {})
-
-
-def test_scheduled_request_metadata_preserves_report_context():
-    metadata = _build_message_metadata(
-        request_id="scheduled-request",
-        source="scheduled_report",
-        input_message=build_chat_input_message("生成经营周报"),
-        meta={
-            "channel": "scheduler",
-            "knowledge_base_ids": ["kb-1"],
-            "skill_slugs": ["reporting"],
-            "mcp_server_slugs": ["metrics"],
-            "output_config": {"format": "markdown"},
-            "schedule_id": "schedule-1",
-            "scheduled_run_id": "run-1",
-        },
-    )
-
-    assert metadata["knowledge_base_ids"] == ["kb-1"]
-    assert metadata["skill_slugs"] == ["reporting"]
-    assert metadata["mcp_server_slugs"] == ["metrics"]
-    assert metadata["output_config"] == {"format": "markdown"}
-    assert metadata["schedule_id"] == "schedule-1"
-    assert metadata["scheduled_run_id"] == "run-1"
 
 
 @pytest.mark.asyncio

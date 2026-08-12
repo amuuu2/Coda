@@ -4,11 +4,9 @@ import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { GithubOutlined } from '@ant-design/icons-vue'
 import {
   BarChart3,
-  ClipboardList,
   LibraryBig,
   Box,
   FolderKanban,
-  FileText,
   PanelLeft,
   PanelLeftOpen,
   MessageCirclePlus,
@@ -147,27 +145,6 @@ const mainList = computed(() => {
     path: '/workspace',
     icon: FolderKanban,
     activeIcon: FolderKanban
-  })
-
-  items.push({
-    name: '自动化中心',
-    path: '/automation',
-    icon: ClipboardList,
-    activeIcon: ClipboardList
-  })
-
-  items.push({
-    name: '抽取中心',
-    path: '/extraction',
-    icon: FileText,
-    activeIcon: FileText
-  })
-
-  items.push({
-    name: '数据分析',
-    path: '/analytics',
-    icon: BarChart3,
-    activeIcon: BarChart3
   })
 
   items.push({

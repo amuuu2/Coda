@@ -8,7 +8,6 @@ import os
 import time
 from dataclasses import dataclass, field
 
-from arq.cron import cron
 from sqlalchemy import select, update
 from sqlalchemy.exc import OperationalError
 from yuxi.agents.mcp.service import ensure_builtin_mcp_servers_in_db
@@ -21,8 +20,6 @@ from yuxi.services.agent_request_queue_service import (
     recover_pending_dispatches,
 )
 from yuxi.services.chat_service import stream_agent_chat, stream_agent_resume
-from yuxi.services.enterprise_automation_service import sweep_scheduled_tasks, sync_scheduled_run
-from yuxi.services.enterprise_extraction_service import process_extraction_task
 from yuxi.services.input_message_service import restore_chat_input_message
 from yuxi.services.run_queue_service import (
     append_run_stream_event,
@@ -174,8 +171,6 @@ async def mark_run_terminal(run_id: str, status: str, error_type: str | None = N
             await db.execute(
                 update(Message).where(Message.id == run.input_message_id).values(delivery_status=delivery_status)
             )
-        if changed and run:
-            await sync_scheduled_run(db, run)
         return TerminalTransition(status=persisted_status, changed=changed)
 
 
@@ -680,15 +675,8 @@ async def _worker_shutdown(ctx):
     await pg_manager.close()
 
 
-async def run_scheduled_task_sweep(ctx):
-    """每分钟扫描到期自动化任务。"""
-    del ctx
-    return await sweep_scheduled_tasks()
-
-
 class WorkerSettings:
-    functions = [process_agent_run, process_extraction_task]
-    cron_jobs = [cron(run_scheduled_task_sweep, minute=set(range(60)), unique=True)]
+    functions = [process_agent_run]
     max_tries = 2
     retry_jobs = True
     # 单任务最长执行时间（秒），可配置：超长图谱构建/深度检索场景需调大，

@@ -6,7 +6,6 @@ from server.routers.agent_invocation_call_router import agent_invocation_call_ro
 from server.routers.agent_invocation_channel_router import agent_invocation_channel_router
 from server.routers.agent_invocation_eval_router import agent_invocation_eval_router
 from server.routers.agent_router import agent_router
-from server.routers.analytics_router import analytics_router
 from server.routers.auth_dept_router import department
 from server.routers.auth_router import auth
 from server.routers.chat_router import chat
@@ -21,8 +20,6 @@ from server.routers.system_task_router import tasks
 from server.routers.tool_router import tools
 from server.routers.user_router import user_router
 from server.routers.workspace_router import workspace
-from server.routers.automation_router import automation_router
-from server.routers.extraction_router import extraction_router
 
 _LITE_MODE = os.environ.get("LITE_MODE", "").lower() in ("true", "1")
 
@@ -32,9 +29,6 @@ router = APIRouter()
 router.include_router(system)  # /api/system/* 系统状态与全局配置
 router.include_router(auth)  # /api/auth/* 登录、用户信息与 CLI 浏览器登录授权
 router.include_router(agent_router)  # /api/agent/* 智能体管理与运行态
-router.include_router(automation_router)  # /api/automation/* 定时 Agent 与报告运行历史
-router.include_router(extraction_router)  # /api/extraction/* 结构化文档抽取
-router.include_router(analytics_router)  # /api/analytics/* 数据源、查询和审计
 router.include_router(agent_invocation_call_router)  # /api/agent-invocation/agent-call/*
 router.include_router(agent_invocation_channel_router)  # /api/agent-invocation/channel/*
 router.include_router(agent_invocation_eval_router)  # /api/agent-invocation/eval/*

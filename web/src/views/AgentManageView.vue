@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import PageHeader from '@/components/shared/PageHeader.vue'
 import AgentManagePanel from '@/components/model-management/AgentManagePanel.vue'
 import ModelProviderManagePanel from '@/components/model-management/ModelProviderManagePanel.vue'
+import QualityLoopPanel from '@/components/model-management/QualityLoopPanel.vue'
 import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
@@ -14,22 +15,25 @@ const userStore = useUserStore()
 const activeTab = ref('agents')
 const agentPanelRef = ref(null)
 const providerPanelRef = ref(null)
+const qualityPanelRef = ref(null)
 
 const modelManageTabs = computed(() => {
-  const tabs = [{ key: 'agents', label: '智能体' }]
+  const tabs = [{ key: 'agents', label: '智能体' }, { key: 'quality', label: '质量闭环' }]
   if (userStore.isAdmin) tabs.push({ key: 'providers', label: '模型供应商' })
   return tabs
 })
 
-const activePanel = computed(() =>
-  activeTab.value === 'providers' ? providerPanelRef.value : agentPanelRef.value
-)
+const activePanel = computed(() => {
+  if (activeTab.value === 'quality') return qualityPanelRef.value
+  return activeTab.value === 'providers' ? providerPanelRef.value : agentPanelRef.value
+})
 
 const activeLoading = computed(() => activePanel.value?.loading || false)
 const activeStats = computed(() => activePanel.value?.stats || {})
 
 const normalizeTab = (tab) => {
   if (tab === 'providers' && userStore.isAdmin) return 'providers'
+  if (tab === 'quality') return 'quality'
   return 'agents'
 }
 
@@ -70,7 +74,7 @@ watch(activeTab, (tab) => {
           <span v-if="activeStats.builtin">{{ activeStats.builtin }} 个内置</span>
           <span>{{ activeStats.manageable || 0 }} 个可管理</span>
         </div>
-        <div v-else class="summary-strip">
+        <div v-else-if="activeTab === 'providers'" class="summary-strip">
           <span>{{ activeStats.total || 0 }} 个供应商</span>
           <span>{{ activeStats.enabled || 0 }} 个启用</span>
           <span v-if="activeStats.warning > 0" class="warning-count">
@@ -78,12 +82,20 @@ watch(activeTab, (tab) => {
           </span>
           <span>{{ activeStats.models || 0 }} 个模型</span>
         </div>
+        <div v-else-if="activeTab === 'quality'" class="summary-strip">
+          <span>{{ activeStats.samples || 0 }} 个 Replay 样本</span>
+          <span>{{ activeStats.candidates || 0 }} 个候选</span>
+          <span>{{ activeStats.experiments || 0 }} 次实验</span>
+        </div>
       </template>
     </PageHeader>
 
     <div class="agent-manage-content">
       <div v-show="activeTab === 'agents'" class="tab-panel">
         <AgentManagePanel ref="agentPanelRef" />
+      </div>
+      <div v-if="activeTab === 'quality'" class="tab-panel">
+        <QualityLoopPanel ref="qualityPanelRef" :agents="agentPanelRef?.managedAgents || []" />
       </div>
       <div v-if="userStore.isAdmin && activeTab === 'providers'" class="tab-panel">
         <ModelProviderManagePanel ref="providerPanelRef" />

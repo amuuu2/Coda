@@ -2,22 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from yuxi.storage.postgres.manager import MIGRATED_ENTERPRISE_TABLES, PostgresManager
-
-
-def test_migrated_enterprise_tables_uses_sqlalchemy_table_names():
-    """企业 Migration 表集合应从 SQLAlchemy Table 读取 name。"""
-    assert MIGRATED_ENTERPRISE_TABLES == {
-        "scheduled_agent_tasks",
-        "scheduled_agent_runs",
-        "extraction_templates",
-        "extraction_batches",
-        "extraction_tasks",
-        "extraction_result_revisions",
-        "analytics_data_sources",
-        "analytics_schema_tables",
-        "analytics_query_audits",
-    }
+from yuxi.storage.postgres.manager import PostgresManager
 
 
 class _RecordingConnection:

@@ -149,6 +149,7 @@ onMounted(async () => {
 defineExpose({
   loading: agentLoading,
   stats: agentStats,
+  managedAgents,
   refresh: loadAgents
 })
 </script>

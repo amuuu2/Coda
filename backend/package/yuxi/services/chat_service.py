@@ -205,14 +205,6 @@ def _apply_input_context_field(input_context: dict, meta: dict | None, key: str)
         input_context[key] = value
 
 
-def _append_input_context_field(input_context: dict, key: str, values: list[str]) -> None:
-    """向运行时资源列表追加受控的系统工具或资源。"""
-    current = input_context.get(key) or []
-    if not isinstance(current, list):
-        current = []
-    input_context[key] = list(dict.fromkeys([*current, *values]))
-
-
 def _apply_subagent_runtime_context(input_context: dict, meta: dict | None) -> None:
     """把子智能体 run 的父线程和文件线程信息注入运行 context。"""
     meta = meta or {}
@@ -887,17 +879,6 @@ async def stream_agent_chat(
     _apply_input_context_field(input_context, meta, "tool_approval_mode")
     for resource_field in ("knowledges", "skills", "mcps"):
         _apply_input_context_field(input_context, meta, resource_field)
-    if meta.get("source") == "scheduled_report":
-        _append_input_context_field(
-            input_context,
-            "tools",
-            [
-                "get_extraction_batch_results",
-                "get_analytics_query_result",
-                "run_controlled_data_query",
-                "present_artifacts",
-            ],
-        )
     _apply_subagent_runtime_context(input_context, meta)
     context = _build_agent_context(agent, input_context)
     langfuse_run = _build_langfuse_run_context(
