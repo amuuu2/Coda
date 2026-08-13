@@ -912,3 +912,128 @@ div.header,
   }
 }
 </style>
+
+<style lang="less" scoped>
+/* 工作台外壳保持高信息密度，用安静的中性色突出当前任务。 */
+.app-layout {
+  height: 100dvh;
+  background: var(--gray-0);
+}
+
+#app-router-view {
+  background: var(--gray-0);
+}
+
+.header {
+  gap: 14px;
+  padding: 8px;
+  background: var(--gray-10);
+  border-right-color: var(--gray-150);
+
+  .sidebar-brand {
+    height: 38px;
+    padding: 2px 0;
+  }
+
+  .brand-link {
+    height: 34px;
+  }
+
+  .brand-avatar {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+    border: 1px solid var(--gray-150);
+    border-radius: 5px;
+  }
+
+  .brand-name {
+    margin-left: 9px;
+    color: var(--gray-1000);
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .sidebar-toggle {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+    border-radius: 6px;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--gray-900);
+      background: var(--gray-50);
+      border-color: var(--gray-150);
+    }
+  }
+
+  .nav-item {
+    height: 34px;
+    border-radius: 6px;
+    color: var(--gray-600);
+    font-size: 13px;
+    font-weight: 500;
+
+    .nav-text {
+      margin-left: 9px;
+      font-weight: inherit;
+    }
+
+    &.active {
+      color: var(--gray-1000);
+      background: var(--gray-100);
+      font-weight: 600;
+    }
+
+    &.primary-action {
+      margin-bottom: 10px;
+      color: var(--main-0);
+      background: var(--gray-900);
+      border-color: var(--gray-900);
+      box-shadow: none;
+
+      &:hover {
+        color: var(--main-0);
+        background: var(--gray-700);
+        border-color: var(--gray-700);
+        box-shadow: none;
+      }
+    }
+
+    &:hover {
+      color: var(--gray-900);
+      background: var(--gray-50);
+    }
+
+    &.github {
+      .github-stars {
+        color: var(--gray-500);
+        background: transparent;
+        padding-right: 2px;
+      }
+    }
+
+    &.user-info {
+      :deep(.user-info-dropdown) {
+        border-radius: 6px;
+      }
+
+      :deep(.user-info-dropdown:hover) {
+        color: var(--gray-900);
+        background: var(--gray-50);
+      }
+
+      :deep(.user-task-center:hover),
+      :deep(.user-task-center.active) {
+        color: var(--gray-900);
+        background: var(--gray-100);
+      }
+    }
+  }
+}
+
+.app-layout.sidebar-collapsed .header {
+  padding: 8px;
+}
+</style>

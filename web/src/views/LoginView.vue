@@ -14,35 +14,47 @@
       </div>
     </div>
 
-    <!-- 顶部导航：品牌名称 & 操作按钮 -->
     <nav class="login-navbar">
       <div class="navbar-content">
-        <div class="brand-container" @click="goHome" style="cursor: pointer">
-          <img v-if="brandLogo" :src="brandLogo" alt="logo" class="brand-logo" />
-          <h1 class="brand-text">
+        <button class="brand-container" type="button" aria-label="返回首页" @click="goHome">
+          <img v-if="brandLogo" :src="brandLogo" :alt="brandName" class="brand-logo" />
+          <span class="brand-text">
             <span v-if="brandOrgName" class="brand-org">{{ brandOrgName }}</span>
             <span v-if="brandOrgName && brandName !== brandOrgName" class="brand-separator"></span>
             <span class="brand-main">{{ brandName }}</span>
-          </h1>
-        </div>
+          </span>
+        </button>
+        <span class="navbar-note">Knowledge workspace</span>
       </div>
     </nav>
 
-    <!-- 主要内容区：居中卡片 -->
     <main class="login-main">
       <div class="login-card">
-        <!-- 左侧图片 -->
         <div class="card-side is-image">
-          <img :src="loginBgImage" alt="登录背景" class="login-bg-image" />
+          <img :src="loginBgImage" alt="Coda 知识工作区" class="login-bg-image" />
+          <div class="image-overlay" aria-hidden="true"></div>
+          <div class="image-content">
+            <p class="image-index">Coda / Workspace</p>
+            <h2>让知识成为<br />可持续工作的系统。</h2>
+            <p>连接知识库、知识图谱与智能体，在一个清晰的工作区内完成检索、推理与协作。</p>
+            <div class="capability-list" aria-label="平台能力">
+              <span>知识检索</span>
+              <span>图谱推理</span>
+              <span>智能体协作</span>
+            </div>
+          </div>
         </div>
 
         <!-- 右侧表单 -->
         <div class="card-side is-form">
           <div class="form-wrapper">
             <header class="form-header">
-              <!-- 如果是在初始化，显示特定标题 -->
-              <h2 v-if="isFirstRun" class="init-title">系统初始化，请创建超级管理员</h2>
-              <p v-else class="welcome-text">欢迎登录</p>
+              <p class="form-kicker">{{ isFirstRun ? 'System setup' : 'Welcome back' }}</p>
+              <h1 v-if="isFirstRun" class="init-title">创建超级管理员</h1>
+              <h1 v-else class="welcome-text">登录 Coda</h1>
+              <p class="form-description">
+                {{ isFirstRun ? '完成初始账户设置后即可进入工作区。' : '使用你的账户继续访问知识工作区。' }}
+              </p>
             </header>
 
             <div class="login-content" :class="{ 'is-initializing': isFirstRun }">
@@ -264,10 +276,11 @@
       </div>
     </main>
 
-    <!-- 页面底部：版权信息等 -->
     <footer class="page-footer">
       <div class="footer-links">
-        <a href="https://github.com/amuuu2/Coda" target="_blank">使用帮助</a>
+        <a href="https://github.com/amuuu2/Coda" target="_blank" rel="noopener noreferrer"
+          >使用帮助</a
+        >
       </div>
       <div class="copyright">
         &copy; {{ new Date().getFullYear() }} {{ brandName }}. All Rights Reserved.
@@ -1059,6 +1072,481 @@ onUnmounted(() => {
 
   .card-side.is-form {
     padding: 40px 20px;
+  }
+}
+</style>
+
+<style lang="less" scoped>
+/* 登录页延续首页的编辑式语言，表单保持稳定、明确且可扫描。 */
+.login-view {
+  min-height: 100dvh;
+  background: var(--gray-10);
+  background-image: none;
+
+  &.has-alert {
+    padding-top: 64px;
+  }
+}
+
+.login-navbar {
+  position: relative;
+  flex: 0 0 auto;
+  min-height: 72px;
+  padding: 0;
+  border-bottom: 1px solid var(--gray-150);
+  background: var(--gray-10);
+
+  .navbar-content {
+    width: 100%;
+    max-width: 1440px;
+    min-height: 72px;
+    padding: 0 40px;
+  }
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--main-300);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+}
+
+.brand-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.brand-text {
+  gap: 10px;
+  font-size: 15px;
+
+  .brand-org,
+  .brand-main {
+    color: var(--gray-1000);
+    font-weight: 650;
+  }
+
+  .brand-separator {
+    width: 1px;
+    height: 14px;
+    border-radius: 0;
+    background: var(--gray-200);
+  }
+
+  .brand-main {
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+}
+
+.navbar-note {
+  color: var(--gray-500);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.login-main {
+  align-items: stretch;
+  padding: 0;
+}
+
+.login-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(430px, 0.92fr);
+  width: 100%;
+  max-width: none;
+  min-height: calc(100dvh - 72px - 61px);
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  border-radius: 0;
+  background: var(--gray-10);
+  box-shadow: none;
+}
+
+.card-side.is-image {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 620px;
+  padding: clamp(48px, 7vw, 96px);
+  overflow: hidden;
+  background: var(--gray-900);
+  isolation: isolate;
+
+  .login-bg-image {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: grayscale(1) contrast(0.9) brightness(0.58);
+    transform: scale(1.01);
+  }
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgb(16 17 17 / 0.62);
+}
+
+.image-content {
+  width: min(100%, 620px);
+  color: #f8f8f6;
+
+  h2 {
+    margin: 20px 0 24px;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', 'Songti SC', 'Noto Serif CJK SC', serif;
+    font-size: clamp(42px, 4.5vw, 68px);
+    font-weight: 600;
+    line-height: 1.08;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  > p:not(.image-index) {
+    max-width: 500px;
+    margin: 0;
+    color: rgb(248 248 246 / 0.72);
+    font-size: 15px;
+    line-height: 1.8;
+    text-wrap: pretty;
+  }
+}
+
+.image-index {
+  margin: 0;
+  color: rgb(248 248 246 / 0.62);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.capability-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid rgb(255 255 255 / 0.18);
+  color: rgb(248 248 246 / 0.72);
+  font-size: 12px;
+
+  span::before {
+    content: '—';
+    margin-right: 8px;
+    color: rgb(248 248 246 / 0.42);
+  }
+}
+
+.card-side.is-form {
+  align-items: center;
+  padding: 72px clamp(40px, 7vw, 112px);
+  background: var(--gray-0);
+}
+
+.form-wrapper {
+  width: min(100%, 420px);
+  max-width: none;
+  gap: 34px;
+}
+
+.form-header {
+  text-align: left;
+
+  .welcome-text,
+  .init-title {
+    margin: 0;
+    color: var(--gray-1000);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', 'Songti SC', 'Noto Serif CJK SC', serif;
+    font-size: clamp(32px, 3vw, 44px);
+    font-weight: 600;
+    line-height: 1.14;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+}
+
+.form-kicker {
+  margin: 0 0 14px;
+  color: var(--gray-500);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.form-description {
+  margin: 14px 0 0;
+  color: var(--gray-500);
+  font-size: 14px;
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+
+.login-content,
+.login-form {
+  width: 100%;
+}
+
+.login-form {
+  :deep(.ant-form-item) {
+    margin-bottom: 22px;
+  }
+
+  :deep(.ant-form-item-label > label) {
+    height: auto;
+    color: var(--gray-700);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  :deep(.ant-input),
+  :deep(.ant-input-affix-wrapper) {
+    min-height: 46px;
+    padding: 9px 12px;
+    color: var(--gray-1000);
+    background: var(--gray-0);
+    border-color: var(--gray-200);
+    border-radius: 6px;
+    box-shadow: none;
+
+    &:hover {
+      border-color: var(--gray-400);
+    }
+
+    &:focus,
+    &:focus-within {
+      border-color: var(--main-color);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--main-color) 12%, transparent);
+    }
+  }
+
+  :deep(.ant-input-affix-wrapper .ant-input) {
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  :deep(.ant-input-prefix) {
+    margin-right: 10px;
+    color: var(--gray-400);
+  }
+
+  :deep(.ant-btn) {
+    height: 46px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
+    box-shadow: none;
+  }
+
+  :deep(.ant-btn-primary) {
+    color: var(--main-0);
+    background: var(--gray-900);
+    border-color: var(--gray-900);
+
+    &:hover:not(:disabled) {
+      background: var(--gray-700);
+      border-color: var(--gray-700);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--main-300);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.login-form.login-form--init :deep(.ant-form-item) {
+  margin-bottom: 16px;
+}
+
+.third-party-login {
+  margin-top: 22px;
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 24px 0 18px;
+    color: var(--gray-400);
+    font-size: 11px;
+
+    &::before,
+    &::after {
+      position: static;
+      flex: 1;
+      width: auto;
+      background: var(--gray-150);
+    }
+
+    span {
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font-size: inherit;
+    }
+  }
+
+  .login-icons :deep(.ant-btn) {
+    height: 46px;
+    border-color: var(--gray-200);
+    border-radius: 6px;
+    color: var(--gray-700);
+    background: var(--gray-0);
+    box-shadow: none;
+
+    &:hover {
+      border-color: var(--gray-400);
+      color: var(--gray-1000);
+      background: var(--gray-25);
+    }
+
+    .anticon,
+    svg {
+      color: var(--gray-500);
+    }
+  }
+}
+
+.agreement-row {
+  color: var(--gray-500);
+  font-size: 12px;
+}
+
+.agreement-link {
+  color: var(--gray-800);
+  text-underline-offset: 3px;
+}
+
+.error-message {
+  margin-top: 10px;
+  padding: 12px 14px;
+  text-align: left;
+  border-radius: 6px;
+}
+
+.page-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 61px;
+  padding: 0 40px;
+  border-top: 1px solid var(--gray-150);
+  background: var(--gray-10);
+}
+
+.footer-links {
+  margin: 0;
+
+  a {
+    color: var(--gray-600);
+    font-size: 11px;
+  }
+}
+
+.copyright {
+  color: var(--gray-400);
+  font-size: 10px;
+}
+
+.server-status-alert {
+  position: fixed;
+  padding: 10px 24px;
+  background: var(--color-error-700);
+
+  .alert-content {
+    max-width: 1440px;
+  }
+}
+
+@media (max-width: 980px) {
+  .login-card {
+    grid-template-columns: minmax(300px, 0.8fr) minmax(400px, 1.2fr);
+  }
+
+  .card-side.is-image {
+    padding: 40px;
+  }
+
+  .image-content h2 {
+    font-size: 42px;
+  }
+
+  .capability-list {
+    display: none;
+  }
+
+  .card-side.is-form {
+    padding: 60px 48px;
+  }
+}
+
+@media (max-width: 760px) {
+  .login-navbar .navbar-content {
+    min-height: 64px;
+    padding: 0 18px;
+  }
+
+  .login-navbar {
+    min-height: 64px;
+  }
+
+  .navbar-note,
+  .brand-org,
+  .brand-separator {
+    display: none;
+  }
+
+  .login-card {
+    display: block;
+    min-height: calc(100dvh - 64px - 57px);
+    margin: 0;
+  }
+
+  .card-side.is-image {
+    display: none;
+  }
+
+  .card-side.is-form {
+    min-height: calc(100dvh - 64px - 57px);
+    padding: 48px 22px 56px;
+  }
+
+  .form-wrapper {
+    width: min(100%, 440px);
+  }
+
+  .page-footer {
+    min-height: 57px;
+    padding: 0 18px;
+  }
+
+  .copyright {
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 </style>

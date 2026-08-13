@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container">
+  <div class="home-container" aria-label="Coda 首页">
     <!-- 加载中状态 -->
     <div v-if="isLoading" class="loading-container">
       <a-spin size="large" />
@@ -18,14 +18,6 @@
 
     <!-- 正常内容 -->
     <template v-else>
-      <!-- 氛围装饰背景 -->
-      <div class="ambient" aria-hidden="true">
-        <span class="orb orb-1"></span>
-        <span class="orb orb-2"></span>
-        <span class="orb orb-3"></span>
-        <div class="grid-mesh"></div>
-      </div>
-
       <header class="glass-header">
         <div class="logo">
           <img
@@ -56,7 +48,8 @@
 
       <main class="hero-section">
         <div class="hero-layout">
-          <div class="hero-content reveal-up">
+          <section class="hero-content reveal-up" aria-labelledby="home-title">
+            <p class="hero-kicker">Knowledge workspace / 01</p>
             <p v-if="typedBadge" class="hero-badge" :class="{ typing: isBadgeTyping }">
               <span class="badge-dot"></span>
               <template v-if="badgeParts.number">
@@ -73,7 +66,9 @@
               </template>
               <template v-else>{{ typedBadge }}</template>
             </p>
-            <h1 class="title reveal-up delay-1">{{ infoStore.branding.title }}</h1>
+            <h1 id="home-title" class="title reveal-up delay-1">
+              {{ infoStore.branding.title }}
+            </h1>
             <Transition name="subtitle-switch" mode="out-in">
               <p v-if="currentSubtitle" class="subtitle" :key="currentSubtitle">
                 {{ currentSubtitle }}
@@ -81,7 +76,7 @@
             </Transition>
             <div class="hero-actions reveal-up delay-2">
               <button class="button-base primary" @click="goToChat">
-                <span>开始体验</span>
+                <span>进入工作台</span>
                 <ArrowRight :size="18" />
               </button>
               <a
@@ -94,11 +89,14 @@
                 <span>查看文档</span>
               </a>
             </div>
-          </div>
+          </section>
 
           <aside class="hero-visual reveal-up delay-1">
             <div class="visual-card">
-              <div class="visual-glow" aria-hidden="true"></div>
+              <header class="visual-header">
+                <span>Retrieval pipeline</span>
+                <span class="visual-status">运行就绪</span>
+              </header>
               <svg
                 class="graph-watermark"
                 viewBox="0 0 240 200"
@@ -122,7 +120,7 @@
                 </g>
               </svg>
 
-              <div class="flow-diagram">
+              <div class="flow-diagram" aria-label="Coda 检索增强生成工作流">
                 <div class="flow-row">
                   <div class="flow-node">
                     <span class="flow-icon"><Workflow :size="22" /></span>
@@ -490,64 +488,6 @@ const realtimeStats = computed(() => {
   padding: 2rem;
 }
 
-// 氛围装饰背景
-.ambient {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(70px);
-  will-change: transform;
-}
-
-.orb-1 {
-  width: 440px;
-  height: 440px;
-  top: -140px;
-  right: -90px;
-  background: var(--main-100);
-  opacity: 0.55;
-  animation: orbFloat 18s ease-in-out infinite;
-}
-
-.orb-2 {
-  width: 380px;
-  height: 380px;
-  bottom: -160px;
-  left: -120px;
-  background: var(--main-200);
-  opacity: 0.4;
-  animation: orbFloat 22s ease-in-out infinite reverse;
-}
-
-.orb-3 {
-  width: 300px;
-  height: 300px;
-  top: 32%;
-  left: 52%;
-  background: var(--main-50);
-  opacity: 0.6;
-  animation: orbFloat 26s ease-in-out infinite;
-}
-
-.grid-mesh {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, var(--main-40) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--main-40) 1px, transparent 1px);
-  background-size: 60px 60px;
-  opacity: 0.7;
-  -webkit-mask-image: radial-gradient(ellipse 75% 55% at 50% 8%, #000, transparent 72%);
-  mask-image: radial-gradient(ellipse 75% 55% at 50% 8%, #000, transparent 72%);
-}
-
 // 顶部导航
 .glass-header {
   display: flex;
@@ -823,17 +763,6 @@ const realtimeStats = computed(() => {
   overflow: hidden;
 }
 
-.visual-glow {
-  position: absolute;
-  top: -40%;
-  right: -20%;
-  width: 70%;
-  height: 70%;
-  background: radial-gradient(circle, var(--main-100), transparent 70%);
-  opacity: 0.7;
-  pointer-events: none;
-}
-
 .graph-watermark {
   position: absolute;
   top: -26px;
@@ -1061,16 +990,6 @@ const realtimeStats = computed(() => {
   }
 }
 
-@keyframes orbFloat {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(0, -26px) scale(1.04);
-  }
-}
-
 @keyframes flowRight {
   0% {
     left: -4px;
@@ -1154,7 +1073,6 @@ const realtimeStats = computed(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .reveal-up,
-  .orb,
   .hero-badge.typing::after {
     animation: none;
   }
@@ -1215,6 +1133,458 @@ const realtimeStats = computed(() => {
 
   .button-base {
     width: 100%;
+  }
+}
+</style>
+
+<style lang="less" scoped>
+/* 编辑式首页：用结构、留白和单一强调色建立层级。 */
+.home-container {
+  min-height: 100dvh;
+  color: var(--color-text);
+  background: var(--gray-10);
+}
+
+.loading-container,
+.error-container {
+  min-height: 100dvh;
+  background: var(--gray-10);
+}
+
+.glass-header {
+  position: relative;
+  width: 100%;
+  min-height: 72px;
+  padding: 0 40px;
+  background: color-mix(in srgb, var(--gray-10) 92%, transparent);
+  border-bottom: 1px solid var(--gray-150);
+  backdrop-filter: blur(12px);
+}
+
+.logo {
+  color: var(--gray-1000);
+
+  .logo-img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 6px;
+    object-fit: contain;
+  }
+}
+
+.logo-text {
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.header-actions {
+  gap: 10px;
+}
+
+.github-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  color: var(--gray-600);
+  border-color: transparent;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--gray-1000);
+    background: var(--gray-50);
+    border-color: var(--gray-150);
+    outline: none;
+  }
+}
+
+.hero-section {
+  justify-content: flex-start;
+  padding: clamp(68px, 9vh, 116px) 40px 56px;
+}
+
+.hero-layout {
+  grid-template-columns: minmax(0, 1.12fr) minmax(380px, 0.88fr);
+  gap: clamp(56px, 8vw, 120px);
+  align-items: center;
+  max-width: 1280px;
+}
+
+.hero-content {
+  gap: 0;
+  max-width: 720px;
+  padding: 0;
+}
+
+.hero-kicker {
+  margin: 0 0 30px;
+  color: var(--gray-500);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hero-badge {
+  order: 4;
+  margin: 32px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--gray-500);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-success-700);
+  box-shadow: none;
+}
+
+.hero-badge-number,
+.hero-badge-link:hover .hero-badge-number {
+  color: var(--gray-700);
+}
+
+.title {
+  max-width: 680px;
+  margin: 0;
+  color: var(--gray-1000);
+  background: none;
+  font-family: 'Iowan Old Style', 'Palatino Linotype', 'Songti SC', 'Noto Serif CJK SC', serif;
+  font-size: clamp(48px, 6vw, 82px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.subtitle {
+  max-width: 580px;
+  min-height: 0;
+  margin: 28px 0 0;
+  color: var(--gray-600);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.hero-actions {
+  margin-top: 40px;
+  gap: 12px;
+}
+
+.button-base {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--main-300);
+    outline-offset: 2px;
+  }
+}
+
+.button-base.primary {
+  background: var(--gray-900);
+  color: var(--main-0);
+  box-shadow: none;
+
+  &:hover {
+    background: var(--gray-700);
+    box-shadow: none;
+
+    :deep(svg) {
+      transform: none;
+    }
+  }
+
+  &:active {
+    background: var(--gray-600);
+  }
+}
+
+.button-base.secondary {
+  padding: 0 16px;
+  color: var(--gray-700);
+  background: transparent;
+  border-color: var(--gray-200);
+
+  :deep(svg) {
+    color: var(--gray-500);
+  }
+
+  &:hover {
+    color: var(--gray-1000);
+    background: var(--gray-50);
+    border-color: var(--gray-300);
+  }
+}
+
+.hero-visual {
+  justify-content: stretch;
+}
+
+.visual-card {
+  max-width: none;
+  padding: 0;
+  overflow: hidden;
+  background: var(--gray-0);
+  border: 1px solid var(--gray-150);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.visual-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 0 18px;
+  color: var(--gray-600);
+  border-bottom: 1px solid var(--gray-150);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 11px;
+}
+
+.visual-status {
+  color: var(--color-success-700);
+}
+
+.graph-watermark {
+  top: 28px;
+  right: -40px;
+  color: var(--gray-300);
+  opacity: 0.18;
+}
+
+.flow-diagram {
+  padding: 48px 28px 32px;
+}
+
+.flow-node {
+  width: 80px;
+  gap: 12px;
+}
+
+.flow-icon,
+.flow-icon--hub {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  color: var(--gray-700);
+  background: var(--gray-25);
+  border: 1px solid var(--gray-150);
+  box-shadow: none;
+
+  :deep(svg) {
+    color: currentColor;
+  }
+}
+
+.flow-icon--hub {
+  color: var(--main-0);
+  background: var(--gray-900);
+  border-color: var(--gray-900);
+}
+
+.flow-node:hover .flow-icon,
+.flow-node--hub:hover .flow-icon--hub {
+  color: var(--main-color);
+  background: var(--main-20);
+  border-color: var(--main-100);
+}
+
+.flow-node--hub:hover .flow-icon--hub {
+  color: var(--main-0);
+  background: var(--gray-700);
+  border-color: var(--gray-700);
+}
+
+.flow-name {
+  color: var(--gray-700);
+  font-size: 12px;
+  font-weight: 550;
+}
+
+.flow-link {
+  height: 48px;
+}
+
+.flow-rail {
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.flow-dot--fwd,
+.flow-dot--back {
+  width: 5px;
+  height: 5px;
+  background: var(--main-500);
+  box-shadow: 0 0 0 3px var(--main-30);
+}
+
+.hub-ring {
+  border-width: 1px;
+  border-color: var(--gray-500);
+}
+
+.flow-caption {
+  max-width: 340px;
+  margin: 28px auto 0;
+  color: var(--gray-500);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.stat-row {
+  margin: 0;
+  padding: 0;
+  border-top-color: var(--gray-150);
+  background: var(--gray-10);
+}
+
+.stat-item {
+  gap: 5px;
+  padding: 16px 18px;
+
+  &:not(:first-child) {
+    padding-left: 18px;
+  }
+
+  &:not(:last-child) {
+    padding-right: 18px;
+    border-right-color: var(--gray-150);
+  }
+}
+
+.stat-item-value {
+  color: var(--gray-900);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 15px;
+  font-weight: 600;
+
+  :deep(svg) {
+    color: var(--gray-500);
+  }
+}
+
+.stat-item-label {
+  color: var(--gray-500);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.footer {
+  border-top-color: var(--gray-150);
+}
+
+.footer-content {
+  max-width: 1280px;
+  padding: 20px 40px;
+  text-align: left;
+}
+
+.copyright {
+  color: var(--gray-500);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+@media (max-width: 960px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 56px;
+  }
+
+  .hero-content {
+    max-width: 760px;
+  }
+
+  .visual-card {
+    max-width: 620px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .glass-header {
+    min-height: 64px;
+    padding: 0 18px;
+  }
+
+  .logo-text {
+    max-width: 148px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hero-section {
+    padding: 52px 18px 40px;
+  }
+
+  .hero-kicker {
+    margin-bottom: 22px;
+  }
+
+  .title {
+    font-size: clamp(42px, 13vw, 58px);
+  }
+
+  .subtitle {
+    margin-top: 22px;
+    font-size: 15px;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+    margin-top: 32px;
+  }
+
+  .button-base {
+    width: auto;
+    flex: 1 1 150px;
+  }
+
+  .flow-diagram {
+    padding: 36px 14px 26px;
+  }
+
+  .flow-node {
+    width: 64px;
+  }
+
+  .flow-name {
+    font-size: 11px;
+  }
+
+  .flow-caption {
+    display: none;
+  }
+
+  .footer-content {
+    padding: 18px;
   }
 }
 </style>
