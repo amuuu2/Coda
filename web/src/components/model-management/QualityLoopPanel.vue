@@ -250,8 +250,8 @@ onMounted(loadAgents)
             <a-button size="small" type="text" :loading="action === `details-${item.id}`" title="查看逐样本结果" @click="showExperiment(item)"><Eye :size="13" /></a-button>
           </div>
         </div>
-        <div v-if="experiment.results?.length" class="result-table-wrap">
-          <a-table :data-source="experiment.results" :pagination="false" size="small" row-key="id">
+        <div v-if="experiment?.results?.length" class="result-table-wrap">
+          <a-table :data-source="experiment?.results || []" :pagination="false" size="small" row-key="id">
             <a-table-column key="sample_id" data-index="sample_id" title="样本" />
             <a-table-column key="variant" data-index="variant" title="版本" />
             <a-table-column key="score" data-index="score" title="评分" />
