@@ -323,7 +323,7 @@ async def _run_sample(db: AsyncSession, user: User, experiment: QualityExperimen
     response = await submit_run_command(
         command=RunSubmissionCommand(
             agent_slug=experiment.agent_slug,
-            thread_id=hash_id("quality_thread:", f"{user.uid}:{experiment.id}:{sample.id}:{variant}", length=64),
+            thread_id=hash_id("quality_thread_", f"{user.uid}:{experiment.id}:{sample.id}:{variant}", length=64),
             request_id=request_id, input_message=build_chat_input_message(query),
             origin=RunOrigin(source="quality_replay", channel="api", external_id=request_id, metadata=meta),
             request_metadata={

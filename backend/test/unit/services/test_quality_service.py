@@ -8,6 +8,7 @@ from fastapi import HTTPException
 from yuxi.services.quality_service import (
     _apply_candidate_config,
     _normalize_candidate_config,
+    _run_sample,
     deterministic_score,
 )
 
@@ -67,3 +68,30 @@ def test_candidate_config_normalizes_skill_list():
     )
 
     assert result == {"skill_slugs": ["knowledge-base"]}
+
+
+@pytest.mark.asyncio
+async def test_run_sample_uses_path_safe_thread_id(monkeypatch):
+    """质量回放线程 ID 只能包含现有运行链路允许的安全字符。"""
+    captured = {}
+
+    async def fake_submit_run_command(*, command, current_user, db):
+        captured["thread_id"] = command.thread_id
+        return {"run_id": "run-1"}
+
+    async def fake_await_agent_run_result(*, run_id, current_uid):
+        return {"agent_run_id": run_id, "output": "ok"}
+
+    monkeypatch.setattr("yuxi.services.quality_service.submit_run_command", fake_submit_run_command)
+    monkeypatch.setattr("yuxi.services.quality_service.await_agent_run_result", fake_await_agent_run_result)
+
+    await _run_sample(
+        db=object(),
+        user=SimpleNamespace(uid="user-1"),
+        experiment=SimpleNamespace(id="experiment-1", agent_slug="default-chatbot"),
+        sample=SimpleNamespace(id="sample-1", input_text="test"),
+        config=None,
+    )
+
+    assert captured["thread_id"].startswith("quality_thread_")
+    assert captured["thread_id"].replace("_", "").isalnum()
