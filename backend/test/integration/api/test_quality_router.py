@@ -66,3 +66,36 @@ async def test_candidate_requires_replay_before_approval(test_client, admin_head
     )
 
     assert approve_response.status_code == 409
+
+
+@pytest.mark.integration
+@pytest.mark.auth
+async def test_quality_experiment_delete_is_owner_scoped(test_client, admin_headers, standard_user):
+    sample_response = await test_client.post(
+        "/api/agent-quality/samples",
+        headers=admin_headers,
+        json={"agent_slug": "default-chatbot", "input_text": "待删除实验样本"},
+    )
+    assert sample_response.status_code == 200
+    experiment_response = await test_client.post(
+        "/api/agent-quality/experiments",
+        headers=admin_headers,
+        json={"agent_slug": "default-chatbot"},
+    )
+    assert experiment_response.status_code == 200
+    experiment_id = experiment_response.json()["experiment"]["id"]
+
+    forbidden_response = await test_client.delete(
+        f"/api/agent-quality/experiments/{experiment_id}",
+        headers=standard_user["headers"],
+    )
+    assert forbidden_response.status_code == 404
+
+    delete_response = await test_client.delete(
+        f"/api/agent-quality/experiments/{experiment_id}", headers=admin_headers
+    )
+    assert delete_response.status_code == 200
+    detail_response = await test_client.get(
+        f"/api/agent-quality/experiments/{experiment_id}", headers=admin_headers
+    )
+    assert detail_response.status_code == 404

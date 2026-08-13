@@ -119,6 +119,11 @@ class QualityRepository:
         )
         return list(result.scalars().all())
 
+    async def delete_experiment(self, experiment: QualityExperiment) -> None:
+        """删除实验及由数据库外键级联维护的逐样本结果。"""
+        await self.db.delete(experiment)
+        await self.db.commit()
+
     async def add(self, entity: Any) -> Any:
         self.db.add(entity)
         await self.db.flush()

@@ -81,7 +81,17 @@ async def test_list_conversations_excludes_invocation_sources(conversation_sessi
         updated_at=now + timedelta(minutes=1),
         extra_metadata={"source": "agent_evaluation"},
     )
-    conversation_session.add_all([normal, agent_call, agent_eval])
+    quality_replay = Conversation(
+        thread_id="thread-quality-replay",
+        uid="user-a",
+        agent_id="agent-a",
+        title="Quality Replay",
+        status="active",
+        created_at=now,
+        updated_at=now + timedelta(minutes=3),
+        extra_metadata={"source": "quality_replay"},
+    )
+    conversation_session.add_all([normal, agent_call, agent_eval, quality_replay])
     await conversation_session.commit()
 
     repo = ConversationRepository(conversation_session)

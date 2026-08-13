@@ -11,12 +11,12 @@ const activeLoading = computed(() => Boolean(unref(qualityPanelRef.value?.loadin
 
 <template>
   <div class="quality-loop-view">
-    <PageHeader title="质量闭环" :loading="activeLoading" :show-border="true">
+    <PageHeader title="Agent 质量评测" :loading="activeLoading" :show-border="true">
       <template #info>
         <div class="summary-strip">
-          <span>{{ activeStats.samples || 0 }} 个 Replay 样本</span>
-          <span>{{ activeStats.candidates || 0 }} 个候选</span>
-          <span>{{ activeStats.experiments || 0 }} 次实验</span>
+          <span>{{ activeStats.samples || 0 }} 条测试问题</span>
+          <span>{{ activeStats.candidates || 0 }} 个候选版本</span>
+          <span>{{ activeStats.experiments || 0 }} 条评测记录</span>
         </div>
       </template>
     </PageHeader>

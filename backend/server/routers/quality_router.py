@@ -15,6 +15,7 @@ from yuxi.services.quality_service import (
     approve_candidate as approve_candidate_service,
     create_candidate,
     create_experiment,
+    delete_experiment,
     publish_candidate,
     rollback_candidate,
     run_experiment,
@@ -180,6 +181,17 @@ async def get_experiment_route(
         raise HTTPException(status_code=404, detail="评测实验不存在")
     results = await repo.list_results(experiment_id, str(current_user.uid))
     return {"experiment": item.to_dict(), "results": [result.to_dict() for result in results]}
+
+
+@quality_router.delete("/experiments/{experiment_id}")
+async def delete_experiment_route(
+    experiment_id: str,
+    current_user: User = Depends(get_required_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """删除当前用户拥有的实验历史和逐样本结果。"""
+    await delete_experiment(db, current_user, experiment_id)
+    return {"message": "实验记录已删除"}
 
 
 @quality_router.post("/candidates/{candidate_id}/approve")

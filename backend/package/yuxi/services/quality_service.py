@@ -259,6 +259,18 @@ async def create_experiment(db: AsyncSession, user: User, agent_slug: str, candi
     return experiment
 
 
+async def delete_experiment(db: AsyncSession, user: User, experiment_id: str) -> None:
+    """删除当前用户拥有的实验，并重新校验 Agent 管理权限。"""
+    repo = QualityRepository(db)
+    experiment = await repo.get_experiment(experiment_id, str(user.uid))
+    if not experiment:
+        raise HTTPException(status_code=404, detail="评测实验不存在")
+    await _get_managed_agent(db, experiment.agent_slug, user)
+    if experiment.status == "running":
+        raise HTTPException(status_code=409, detail="运行中的实验不能删除")
+    await repo.delete_experiment(experiment)
+
+
 async def run_experiment(db: AsyncSession, user: User, experiment_id: str) -> QualityExperiment:
     """回放样本到现有 AgentRun 队列并持久化基线与候选结果。"""
     repo = QualityRepository(db)

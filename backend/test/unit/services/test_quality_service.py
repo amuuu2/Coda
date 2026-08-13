@@ -1,6 +1,7 @@
 """Agent 质量闭环服务的纯逻辑测试；本文件已编写但未运行。"""
 
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
 from fastapi import HTTPException
@@ -9,6 +10,7 @@ from yuxi.services.quality_service import (
     _apply_candidate_config,
     _normalize_candidate_config,
     _run_sample,
+    delete_experiment,
     deterministic_score,
 )
 
@@ -68,6 +70,24 @@ def test_candidate_config_normalizes_skill_list():
     )
 
     assert result == {"skill_slugs": ["knowledge-base"]}
+
+
+@pytest.mark.asyncio
+async def test_running_experiment_cannot_be_deleted(monkeypatch):
+    """运行中的实验必须保留，避免 Worker 完成后回写到已删除记录。"""
+    experiment = SimpleNamespace(id="experiment-1", agent_slug="default-chatbot", status="running")
+    repo = SimpleNamespace(
+        get_experiment=AsyncMock(return_value=experiment),
+        delete_experiment=AsyncMock(),
+    )
+    monkeypatch.setattr("yuxi.services.quality_service.QualityRepository", lambda _db: repo)
+    monkeypatch.setattr("yuxi.services.quality_service._get_managed_agent", AsyncMock())
+
+    with pytest.raises(HTTPException) as error:
+        await delete_experiment(object(), SimpleNamespace(uid="user-1"), experiment.id)
+
+    assert error.value.status_code == 409
+    repo.delete_experiment.assert_not_awaited()
 
 
 @pytest.mark.asyncio
