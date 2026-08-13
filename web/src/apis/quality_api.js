@@ -2,6 +2,7 @@ import { apiGet, apiPost } from './base'
 
 /** Agent 质量评测闭环 API。 */
 export const qualityApi = {
+  listAgents: () => apiGet('/api/agent-quality/agents'),
   listSamples: (agentSlug) => apiGet(`/api/agent-quality/samples?agent_slug=${encodeURIComponent(agentSlug)}`),
   createSample: (payload) => apiPost('/api/agent-quality/samples', payload),
   createSampleFromRun: (runId, expectedOutput = null) => apiPost(`/api/agent-quality/runs/${runId}/sample`, { expected_output: expectedOutput }),

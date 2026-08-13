@@ -5,6 +5,26 @@ import pytest
 
 @pytest.mark.integration
 @pytest.mark.auth
+async def test_quality_agent_list_only_returns_managed_main_agents(test_client, admin_headers):
+    response = await test_client.get("/api/agent-quality/agents", headers=admin_headers)
+    all_agents_response = await test_client.get(
+        "/api/agent?include_subagents=true", headers=admin_headers
+    )
+
+    assert response.status_code == 200
+    assert all_agents_response.status_code == 200
+    agents = response.json()["agents"]
+    expected_slugs = {
+        agent["slug"]
+        for agent in all_agents_response.json()["agents"]
+        if agent["can_manage"] and not agent["is_subagent"]
+    }
+    assert {agent["slug"] for agent in agents} == expected_slugs
+    assert all(set(agent) == {"id", "slug", "name"} for agent in agents)
+
+
+@pytest.mark.integration
+@pytest.mark.auth
 async def test_quality_routes_require_authentication(test_client):
     response = await test_client.get("/api/agent-quality/samples?agent_slug=default-chatbot")
 
@@ -46,4 +66,3 @@ async def test_candidate_requires_replay_before_approval(test_client, admin_head
     )
 
     assert approve_response.status_code == 409
-

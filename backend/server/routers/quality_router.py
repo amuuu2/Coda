@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from server.utils.auth_middleware import get_db, get_required_user
+from yuxi.repositories.agent_repository import AgentRepository, user_can_manage_agent
 from yuxi.repositories.quality_repository import QualityRepository
 from yuxi.services.quality_service import (
     add_replay_sample,
@@ -51,6 +52,28 @@ class RunSamplePayload(BaseModel):
     """从 AgentRun 收集样本时的可选期望答案。"""
 
     expected_output: str | None = None
+
+
+@quality_router.get("/agents")
+async def list_managed_agents(
+    current_user: User = Depends(get_required_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """列出当前用户可在质量闭环中管理的主智能体。"""
+    repo = AgentRepository(db)
+    await repo.ensure_default_agent()
+    agents = await repo.list_visible(user=current_user)
+    return {
+        "agents": [
+            {
+                "id": agent.slug,
+                "slug": agent.slug,
+                "name": agent.name,
+            }
+            for agent in agents
+            if user_can_manage_agent(current_user, agent)
+        ]
+    }
 
 
 @quality_router.get("/samples")

@@ -1,9 +1,8 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import { Check, Eye, FlaskConical, Play, Plus, RotateCcw, Rocket, RefreshCw } from 'lucide-vue-next'
 
-import { agentApi } from '@/apis/agent_api'
 import { qualityApi } from '@/apis/quality_api'
 
 const agents = ref([])
@@ -19,18 +18,27 @@ const error = ref('')
 const sampleForm = ref({ input_text: '', expected_output: '' })
 const candidateForm = ref({ system_prompt: '', model_spec: '', skill_slugs: '', change_summary: '' })
 
-const availableAgents = computed(() => agents.value.filter((agent) => agent.can_manage && !agent.is_subagent))
+const normalizeAgent = (agent) => {
+  const id = agent?.agent_id || agent?.slug || agent?.id
+  return id
+    ? {
+        ...agent,
+        id,
+        agent_id: agent?.agent_id || id,
+        slug: agent?.slug || id
+      }
+    : agent
+}
+
+const availableAgents = computed(() => agents.value)
 const selectedAgentItem = computed(() => availableAgents.value.find((agent) => agent.id === selectedAgent.value))
 
 const loadAgents = async () => {
   agentLoading.value = true
   error.value = ''
   try {
-    const response = await agentApi.getAgents({ includeSubagents: true })
-    agents.value = (response.agents || []).map((agent) => {
-      const id = agent.id || agent.agent_id || agent.slug
-      return id ? { ...agent, id } : agent
-    })
+    const response = await qualityApi.listAgents()
+    agents.value = (response.agents || []).map(normalizeAgent)
     setDefaultAgent()
   } catch (err) {
     error.value = err.message || '加载智能体失败'
@@ -150,7 +158,7 @@ const showExperiment = async (item) => {
 }
 
 defineExpose({
-  loading,
+  loading: computed(() => agentLoading.value || loading.value),
   stats: computed(() => ({
     samples: samples.value.length,
     candidates: candidates.value.length,
@@ -159,7 +167,6 @@ defineExpose({
 })
 
 onMounted(loadAgents)
-watch(availableAgents, setDefaultAgent)
 </script>
 
 <template>
@@ -181,8 +188,9 @@ watch(availableAgents, setDefaultAgent)
       </div>
     </div>
 
-    <a-alert v-if="error" type="error" :message="error" show-icon />
-    <a-empty v-else-if="!selectedAgentItem" description="暂无可管理的智能体" />
+    <div v-if="agentLoading" class="quality-loading-state"><a-spin /></div>
+    <a-alert v-else-if="error" type="error" :message="error" show-icon />
+    <a-empty v-else-if="!selectedAgentItem" description="暂无可管理的主智能体" />
     <template v-else>
       <div class="quality-grid">
         <section class="quality-section">
@@ -253,6 +261,7 @@ watch(availableAgents, setDefaultAgent)
 .quality-toolbar h2, .quality-toolbar p, h3 { margin: 0; }
 .quality-toolbar p { margin-top: 5px; color: var(--gray-600); font-size: 12px; }
 .quality-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.quality-loading-state { display: flex; align-items: center; justify-content: center; min-height: 220px; }
 .quality-section { display: flex; flex-direction: column; gap: 10px; padding: 16px; border: 1px solid var(--gray-100); border-radius: 7px; background: var(--gray-0); }
 .section-heading { justify-content: space-between; color: var(--gray-700); }
 .section-heading span, .status, small { color: var(--gray-500); font-size: 12px; }
