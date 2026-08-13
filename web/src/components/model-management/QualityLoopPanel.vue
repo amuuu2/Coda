@@ -33,11 +33,20 @@ const normalizeAgent = (agent) => {
 const availableAgents = computed(() => agents.value)
 const selectedAgentItem = computed(() => availableAgents.value.find((agent) => agent.id === selectedAgent.value))
 
+const withTimeout = (promise, messageText, timeout = 10000) => {
+  let timer
+  const timeoutPromise = new Promise((_, reject) => {
+    timer = window.setTimeout(() => reject(new Error(messageText)), timeout)
+  })
+
+  return Promise.race([promise, timeoutPromise]).finally(() => window.clearTimeout(timer))
+}
+
 const loadAgents = async () => {
   agentLoading.value = true
   error.value = ''
   try {
-    const response = await qualityApi.listAgents()
+    const response = await withTimeout(qualityApi.listAgents(), '加载智能体超时，请检查登录状态或 API 服务')
     agents.value = (response.agents || []).map(normalizeAgent)
     setDefaultAgent()
   } catch (err) {
@@ -52,11 +61,14 @@ const load = async () => {
   loading.value = true
   error.value = ''
   try {
-    const [sampleResponse, candidateResponse, experimentResponse] = await Promise.all([
-      qualityApi.listSamples(selectedAgent.value),
-      qualityApi.listCandidates(selectedAgent.value),
-      qualityApi.listExperiments(selectedAgent.value)
-    ])
+    const [sampleResponse, candidateResponse, experimentResponse] = await withTimeout(
+      Promise.all([
+        qualityApi.listSamples(selectedAgent.value),
+        qualityApi.listCandidates(selectedAgent.value),
+        qualityApi.listExperiments(selectedAgent.value)
+      ]),
+      '加载质量数据超时，请检查 API 服务'
+    )
     samples.value = sampleResponse.samples || []
     candidates.value = candidateResponse.candidates || []
     experiments.value = experimentResponse.experiments || []

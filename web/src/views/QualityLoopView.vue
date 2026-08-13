@@ -1,12 +1,12 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 
 import PageHeader from '@/components/shared/PageHeader.vue'
 import QualityLoopPanel from '@/components/model-management/QualityLoopPanel.vue'
 
 const qualityPanelRef = ref(null)
-const activeStats = computed(() => qualityPanelRef.value?.stats || {})
-const activeLoading = computed(() => qualityPanelRef.value?.loading || false)
+const activeStats = computed(() => unref(qualityPanelRef.value?.stats) || {})
+const activeLoading = computed(() => Boolean(unref(qualityPanelRef.value?.loading)))
 </script>
 
 <template>
