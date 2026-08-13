@@ -98,6 +98,19 @@ const router = createRouter({
       ]
     },
     {
+      path: '/agent-quality',
+      name: 'agent-quality',
+      component: AppLayout,
+      children: [
+        {
+          path: '',
+          name: 'AgentQualityComp',
+          component: () => import('../views/QualityLoopView.vue'),
+          meta: { keepAlive: false, requiresAuth: true }
+        }
+      ]
+    },
+    {
       path: '/extensions',
       name: 'extensions',
       component: AppLayout,

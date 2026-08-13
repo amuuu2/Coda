@@ -7,6 +7,7 @@ import {
   LibraryBig,
   Box,
   FolderKanban,
+  Microscope,
   PanelLeft,
   PanelLeftOpen,
   MessageCirclePlus,
@@ -138,6 +139,13 @@ const mainList = computed(() => {
     path: '/agent-manage',
     icon: Box,
     activeIcon: Box
+  })
+
+  items.push({
+    name: '质量闭环',
+    path: '/agent-quality',
+    icon: Microscope,
+    activeIcon: Microscope
   })
 
   items.push({

@@ -693,8 +693,9 @@ defineExpose({
   }
 
   &.create-mode {
-    height: auto;
-    min-height: 360px;
+    height: min(72vh, 640px);
+    max-height: calc(100vh - 96px);
+    min-height: 0;
   }
 }
 

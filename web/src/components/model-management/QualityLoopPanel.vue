@@ -3,25 +3,41 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { Check, Eye, FlaskConical, Play, Plus, RotateCcw, Rocket, RefreshCw } from 'lucide-vue-next'
 
+import { agentApi } from '@/apis/agent_api'
 import { qualityApi } from '@/apis/quality_api'
 
-const props = defineProps({
-  agents: { type: Array, default: () => [] }
-})
-
+const agents = ref([])
 const selectedAgent = ref('')
 const samples = ref([])
 const candidates = ref([])
 const experiment = ref(null)
 const experiments = ref([])
 const loading = ref(false)
+const agentLoading = ref(false)
 const action = ref('')
 const error = ref('')
 const sampleForm = ref({ input_text: '', expected_output: '' })
 const candidateForm = ref({ system_prompt: '', model_spec: '', skill_slugs: '', change_summary: '' })
 
-const availableAgents = computed(() => props.agents.filter((agent) => agent.can_manage && !agent.is_subagent))
+const availableAgents = computed(() => agents.value.filter((agent) => agent.can_manage && !agent.is_subagent))
 const selectedAgentItem = computed(() => availableAgents.value.find((agent) => agent.id === selectedAgent.value))
+
+const loadAgents = async () => {
+  agentLoading.value = true
+  error.value = ''
+  try {
+    const response = await agentApi.getAgents({ includeSubagents: true })
+    agents.value = (response.agents || []).map((agent) => {
+      const id = agent.id || agent.agent_id || agent.slug
+      return id ? { ...agent, id } : agent
+    })
+    setDefaultAgent()
+  } catch (err) {
+    error.value = err.message || '加载智能体失败'
+  } finally {
+    agentLoading.value = false
+  }
+}
 
 const load = async () => {
   if (!selectedAgent.value) return
@@ -116,8 +132,9 @@ const updateCandidate = async (candidate, operation) => {
 }
 
 const setDefaultAgent = () => {
-  selectedAgent.value = selectedAgent.value || availableAgents.value[0]?.id || ''
-  load()
+  const currentAgent = availableAgents.value.find((agent) => agent.id === selectedAgent.value)
+  selectedAgent.value = currentAgent?.id || availableAgents.value[0]?.id || ''
+  if (selectedAgent.value) load()
 }
 
 const showExperiment = async (item) => {
@@ -141,7 +158,7 @@ defineExpose({
   }))
 })
 
-onMounted(setDefaultAgent)
+onMounted(loadAgents)
 watch(availableAgents, setDefaultAgent)
 </script>
 
@@ -153,8 +170,14 @@ watch(availableAgents, setDefaultAgent)
         <p>把真实运行沉淀为 Replay 样本，用同一条 AgentRun 链路比较 Prompt、模型和 Skill 版本。</p>
       </div>
       <div class="quality-toolbar-actions">
-        <a-select v-model:value="selectedAgent" :options="availableAgents.map((agent) => ({ value: agent.id, label: agent.name }))" placeholder="选择智能体" @change="load" />
-        <a-button :disabled="!selectedAgent" :loading="loading" @click="load" title="刷新质量数据"><RefreshCw :size="14" /></a-button>
+        <a-select
+          v-model:value="selectedAgent"
+          class="quality-agent-select"
+          :options="availableAgents.map((agent) => ({ value: agent.id, label: agent.name || agent.id }))"
+          placeholder="选择智能体"
+          @change="load"
+        />
+        <a-button :disabled="agentLoading" :loading="agentLoading || loading" @click="loadAgents" title="刷新智能体和质量数据"><RefreshCw :size="14" /></a-button>
       </div>
     </div>
 
@@ -225,6 +248,8 @@ watch(availableAgents, setDefaultAgent)
 .quality-loop-panel { padding: 18px var(--page-padding) 36px; }
 .quality-toolbar, .section-heading, .quality-toolbar-actions, .candidate-actions, .experiment-summary { display: flex; align-items: center; gap: 10px; }
 .quality-toolbar { justify-content: space-between; margin-bottom: 18px; }
+.quality-agent-select { width: 190px; }
+:deep(.quality-agent-select .ant-select-selection-item) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .quality-toolbar h2, .quality-toolbar p, h3 { margin: 0; }
 .quality-toolbar p { margin-top: 5px; color: var(--gray-600); font-size: 12px; }
 .quality-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -244,5 +269,9 @@ watch(availableAgents, setDefaultAgent)
 .experiment-item { display: grid; grid-template-columns: minmax(0, 1fr) auto 28px; align-items: center; gap: 8px; padding: 6px 8px; border-top: 1px solid var(--gray-100); color: var(--gray-600); font-size: 12px; }
 .experiment-item span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .result-table-wrap { overflow-x: auto; }
-@media (max-width: 760px) { .quality-toolbar, .quality-grid { grid-template-columns: 1fr; display: grid; } .quality-toolbar-actions { flex-wrap: wrap; } }
+@media (max-width: 760px) {
+  .quality-toolbar, .quality-grid { grid-template-columns: 1fr; display: grid; }
+  .quality-toolbar-actions { flex-wrap: wrap; }
+  .quality-agent-select { width: min(190px, 100%); }
+}
 </style>
