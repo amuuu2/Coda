@@ -10,15 +10,22 @@
           <template #icon><CircleHelp :size="16" /></template>
           使用说明
         </a-button>
-        <a-button :disabled="activeSourceKey !== 'personal'" @click="openCreateDirectoryModal">
+        <a-button
+          class="lucide-icon-btn"
+          :disabled="activeSourceKey !== 'personal'"
+          @click="openCreateDirectoryModal"
+        >
+          <template #icon><FolderPlus :size="15" /></template>
           新建文件夹
         </a-button>
         <a-button
           type="primary"
+          class="lucide-icon-btn"
           :loading="uploadingFile"
           :disabled="activeSourceKey !== 'personal'"
           @click="openUploadFilePicker"
         >
+          <template #icon><Upload :size="15" /></template>
           上传文件
         </a-button>
       </template>
@@ -198,7 +205,14 @@
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { message, Modal } from 'ant-design-vue'
-import { ChevronLeft, ChevronRight, CircleHelp, LibraryBig } from 'lucide-vue-next'
+import {
+  ChevronLeft,
+  ChevronRight,
+  CircleHelp,
+  FolderPlus,
+  LibraryBig,
+  Upload
+} from 'lucide-vue-next'
 import PageHeader from '@/components/shared/PageHeader.vue'
 import AgentFilePreview from '@/components/AgentFilePreview.vue'
 import WorkspaceFileList from '@/components/workspace/WorkspaceFileList.vue'
@@ -914,7 +928,7 @@ watch(useInlinePreview, (isInline, wasInline) => {
   grid-template-columns: 195px minmax(0, 1fr);
   flex: 1 1 auto;
   min-height: 0;
-  background: var(--gray-0);
+  background: var(--gray-10);
   overflow: hidden;
 
   &.is-sidebar-collapsed {
@@ -948,18 +962,18 @@ watch(useInlinePreview, (isInline, wasInline) => {
   color: var(--gray-600);
   cursor: pointer;
   transform: translateY(-50%);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  box-shadow: none;
 
   &:hover {
-    background: var(--main-20);
-    color: var(--main-color);
+    background: var(--gray-50);
+    color: var(--gray-900);
   }
 }
 
 .sidebar-collapse-action {
   right: -13px;
   width: 26px;
-  border-radius: 50%;
+  border-radius: 6px;
 }
 
 .sidebar-expand-action {
@@ -974,6 +988,7 @@ watch(useInlinePreview, (isInline, wasInline) => {
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   min-height: 0;
+  background: var(--gray-0);
 }
 
 .workspace-preview-resizer {

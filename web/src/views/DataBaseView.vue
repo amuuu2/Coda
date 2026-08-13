@@ -616,6 +616,9 @@ defineExpose({
 
 <style lang="less" scoped>
 .database-container {
+  min-height: 100%;
+  background: var(--gray-10);
+
   :deep(.info-card-icon) {
     background: var(--gray-0);
   }
@@ -724,7 +727,7 @@ defineExpose({
 
     .kb-type-card {
       border: 1px solid var(--gray-150);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 14px;
       cursor: pointer;
       transition: all 0.2s ease;

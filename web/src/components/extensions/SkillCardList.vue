@@ -1240,8 +1240,8 @@ defineExpose({
   min-height: 220px;
   flex-direction: column;
   border: 1px dashed var(--gray-150);
-  border-radius: 16px;
-  background: linear-gradient(180deg, var(--gray-0) 0%, var(--gray-25) 100%);
+  border-radius: 8px;
+  background: var(--gray-25);
   color: var(--gray-500);
   text-align: center;
 }
@@ -1253,7 +1253,7 @@ defineExpose({
   width: 44px;
   height: 44px;
   margin-bottom: 12px;
-  border-radius: 14px;
+  border-radius: 6px;
   background: var(--gray-50);
   color: var(--gray-600);
 }
@@ -1333,7 +1333,7 @@ defineExpose({
   width: 28px;
   height: 28px;
   border: 1px solid var(--gray-150);
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--gray-0);
   color: var(--gray-600);
   font-size: 18px;
@@ -1418,7 +1418,7 @@ defineExpose({
   flex-shrink: 0;
   width: 32px;
   height: 32px;
-  border-radius: 9px;
+  border-radius: 6px;
   background: var(--gray-50);
   color: var(--gray-600);
 }
@@ -1453,7 +1453,7 @@ defineExpose({
   align-items: center;
   height: 18px;
   padding: 0 6px;
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--gray-100);
   color: var(--gray-600);
   font-size: 11px;
@@ -1474,7 +1474,7 @@ defineExpose({
   padding: 14px 16px;
   overflow-y: auto;
   border: 1px solid var(--gray-150);
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--gray-25);
 
   :deep(.yk-markdown-preview) {

@@ -1321,6 +1321,7 @@ defineExpose({
 
 <style lang="less" scoped>
 .model-provider-manage-panel {
+  background: var(--gray-10);
   height: 100%;
   min-height: 0;
 
@@ -1373,7 +1374,7 @@ defineExpose({
   color: var(--gray-500);
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.4px;
+  letter-spacing: 0;
 }
 
 .provider-empty-state {

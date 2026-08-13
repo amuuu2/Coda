@@ -1290,12 +1290,19 @@ defineExpose({
   width: 100%;
   margin: 0 auto;
   border: 1px solid var(--gray-150);
-  border-radius: 0.8rem;
-  box-shadow: 0 2px 8px var(--shadow-1);
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  box-shadow: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   background: var(--gray-0);
   gap: 0px;
   position: relative;
+
+  &:focus-within {
+    border-color: var(--gray-300);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--main-color) 8%, transparent);
+  }
 
   /* Default: Multi-line layout with top/bottom slots */
   padding: 0.8rem 0.75rem 0.6rem 0.75rem;
@@ -1460,7 +1467,7 @@ defineExpose({
 .expand-btn {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1523,12 +1530,12 @@ defineExpose({
   height: 32px;
   width: 32px;
   cursor: pointer;
-  background-color: var(--main-500);
-  border-radius: 50%;
+  background-color: var(--gray-900);
+  border-radius: 6px;
   border: none;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px var(--shadow-2);
-  color: var(--gray-0);
+  box-shadow: none;
+  color: var(--main-0);
   padding: 0;
   display: flex;
   align-items: center;
@@ -1536,13 +1543,13 @@ defineExpose({
   font-size: 14px;
 
   &:hover {
-    background-color: var(--main-color);
-    box-shadow: 0 4px 8px var(--shadow-3);
-    color: var(--gray-0);
+    background-color: var(--gray-700);
+    box-shadow: none;
+    color: var(--main-0);
   }
 
   &:active {
-    box-shadow: 0 2px 4px var(--shadow-2);
+    box-shadow: none;
     // 移除点击动画效果
   }
 

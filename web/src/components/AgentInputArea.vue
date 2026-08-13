@@ -237,15 +237,15 @@ defineExpose({
   min-width: 0;
   padding: 10px 34px 10px 12px;
   border: 1px solid var(--gray-150);
-  border-radius: 12px;
+  border-radius: 8px;
   background: var(--gray-0);
-  box-shadow: 0 1px 4px var(--shadow-0);
+  box-shadow: none;
 }
 
 .attachment-file-icon {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -310,7 +310,7 @@ defineExpose({
   gap: 6px;
   padding: 6px 8px;
   height: 30px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 13px;
   color: var(--gray-600);
   cursor: pointer;

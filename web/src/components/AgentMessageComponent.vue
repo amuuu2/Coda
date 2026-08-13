@@ -343,7 +343,7 @@ const parsedData = computed(() => {
 <style lang="less" scoped>
 .message-box {
   display: inline-block;
-  border-radius: 1.5rem;
+  border-radius: 8px;
   margin: 0.8rem 0;
   padding: 0.625rem 1.25rem;
   user-select: text;
@@ -355,16 +355,16 @@ const parsedData = computed(() => {
   color: var(--gray-10000);
   max-width: 100%;
   position: relative;
-  letter-spacing: 0.25px;
+  letter-spacing: 0;
 
   &.human,
   &.sent {
     max-width: 95%;
     color: var(--gray-1000);
-    background-color: var(--main-50);
+    background-color: var(--gray-100);
     align-self: flex-end;
-    border-radius: 0.5rem;
-    padding: 0.5rem 1rem;
+    border-radius: 7px;
+    padding: 0.55rem 0.9rem;
   }
 
   &.assistant,

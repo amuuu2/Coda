@@ -21,8 +21,8 @@ defineProps({
 <style lang="less" scoped>
 .extension-card-grid {
   display: grid;
-  gap: 16px;
-  padding: 16px var(--page-padding);
+  gap: 12px;
+  padding: 18px var(--page-padding) 24px;
 
   &-empty {
     grid-column: 1 / -1;

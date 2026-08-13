@@ -171,7 +171,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px var(--page-padding);
+  padding: 20px var(--page-padding) 0;
 }
 
 .status-left {
@@ -187,14 +187,15 @@ onUnmounted(() => {
 
 .system-details {
   .system-name {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 650;
     color: var(--gray-900, #111827);
     line-height: 1.4;
   }
 
   .system-subtitle {
-    font-size: 13px;
+    max-width: 620px;
+    font-size: 12px;
     color: var(--gray-600, #6b7280);
     line-height: 1.2;
   }

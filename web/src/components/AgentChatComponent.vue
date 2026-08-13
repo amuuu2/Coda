@@ -3344,10 +3344,11 @@ watch(currentChatId, (threadId, oldThreadId) => {
   width: 100%;
   height: 100%;
   position: relative;
+  background: var(--gray-10);
 }
 
 .chat {
-  --header-height: 40px;
+  --header-height: 48px;
 
   position: relative;
   flex: 1;
@@ -3366,13 +3367,11 @@ watch(currentChatId, (threadId, oldThreadId) => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 8px;
+    padding: 0 14px;
+    background: var(--gray-0);
+    border-bottom: 1px solid var(--gray-150);
     flex-shrink: 0; /* Prevent header from shrinking */
     transition: padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-    &.has-active-thread {
-      border-bottom: 1px solid var(--gray-150);
-    }
 
     .header__left,
     .header__right {
@@ -3393,9 +3392,9 @@ watch(currentChatId, (threadId, oldThreadId) => {
     .conversation-title {
       font-size: 14px;
       line-height: 20px;
-      font-weight: 400;
-      color: var(--text-primary);
-      max-width: 200px;
+      font-weight: 600;
+      color: var(--gray-900);
+      max-width: 320px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -3436,6 +3435,7 @@ watch(currentChatId, (threadId, oldThreadId) => {
     margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 0; /* Prevent flex item from overflowing */
+  background: var(--gray-10);
 
   scrollbar-width: none;
 }
@@ -3535,11 +3535,14 @@ watch(currentChatId, (threadId, oldThreadId) => {
 }
 
 .chat-greeting-input {
-  padding: 24px 0 34px;
-  text-align: center;
+  padding: 32px 0 36px;
+  text-align: left;
 
   h1 {
-    font-size: 1.4rem;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', 'Songti SC', serif;
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 600;
+    line-height: 1.18;
     color: var(--gray-1000);
     margin: 0;
   }
@@ -3686,10 +3689,10 @@ watch(currentChatId, (threadId, oldThreadId) => {
 
 .chat-box {
   width: 100%;
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
   flex-grow: 1;
-  padding: 1rem var(--page-padding);
+  padding: 28px var(--page-padding) 18px;
   display: flex;
   flex-direction: column;
 }
@@ -3714,12 +3717,14 @@ watch(currentChatId, (threadId, oldThreadId) => {
   bottom: 0;
   width: 100%;
   margin: 0 auto;
-  padding: 4px 1rem 0 1rem;
+  padding: 8px 16px 16px;
+  background: color-mix(in srgb, var(--gray-10) 92%, transparent);
+  backdrop-filter: blur(12px);
   z-index: 1000;
 
   .message-input-wrapper {
     width: 100%;
-    max-width: 800px;
+    max-width: 860px;
     margin: 0 auto;
 
     .message-input-stage {
@@ -3762,7 +3767,7 @@ watch(currentChatId, (threadId, oldThreadId) => {
       padding: 6px 12px 18px;
       background: var(--gray-25);
       border: 1px solid var(--gray-150);
-      border-radius: 16px 16px 12px 12px;
+      border-radius: 8px 8px 6px 6px;
     }
 
     .queued-request-notice {

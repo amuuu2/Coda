@@ -179,8 +179,8 @@ const normalizedTags = computed(() => {
 .info-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 16px;
+  gap: 12px;
+  padding: 18px;
   border-radius: 8px;
   border: 1px solid var(--gray-150);
   background: var(--gray-0);
@@ -192,7 +192,7 @@ const normalizedTags = computed(() => {
 
   &:hover {
     border-color: var(--gray-300);
-    background: var(--gray-25);
+    background: var(--gray-0);
   }
 
   &-disabled {
@@ -207,10 +207,10 @@ const normalizedTags = computed(() => {
   }
 
   &-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 7px;
-    background: var(--gray-50);
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: var(--gray-25);
     border: 1px solid var(--gray-150);
     display: flex;
     align-items: center;
@@ -235,8 +235,8 @@ const normalizedTags = computed(() => {
   }
 
   &-name {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 650;
     color: var(--gray-900);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -263,7 +263,7 @@ const normalizedTags = computed(() => {
   &-desc {
     font-size: 13px;
     color: var(--gray-600);
-    line-height: 1.4;
+    line-height: 1.55;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -316,10 +316,10 @@ const normalizedTags = computed(() => {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin: 0 -16px -16px;
-    padding: 10px 16px;
+    margin: 2px -18px -18px;
+    padding: 11px 18px;
     border-top: 1px solid var(--gray-100);
-    background: var(--gray-10);
+    background: var(--gray-25);
   }
 
   &-mini {

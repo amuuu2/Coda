@@ -33,7 +33,9 @@ defineProps({
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px var(--page-padding) 0;
+  min-height: 60px;
+  padding: 14px var(--page-padding);
+  border-bottom: 1px solid var(--gray-100);
 
   &-left {
     display: flex;
@@ -49,20 +51,20 @@ defineProps({
 }
 
 .extension-search-input {
-  width: 280px;
+  width: min(320px, 42vw);
 
   :deep(.ant-input-affix-wrapper) {
-    height: 32px;
+    height: 34px;
     padding: 0 10px;
     border: 1px solid var(--gray-150);
-    border-radius: 8px;
-    background-color: var(--gray-0);
+    border-radius: 6px;
+    background-color: var(--gray-25);
 
     &:hover,
     &:focus,
     &.ant-input-affix-wrapper-focused {
-      border-color: var(--gray-200);
-      box-shadow: none;
+      border-color: var(--main-300);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--main-color) 9%, transparent);
     }
   }
 

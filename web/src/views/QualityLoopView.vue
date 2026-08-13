@@ -32,7 +32,7 @@ const activeLoading = computed(() => Boolean(unref(qualityPanelRef.value?.loadin
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  background: var(--gray-0);
+  background: var(--gray-10);
   color: var(--gray-1000);
 }
 
@@ -44,16 +44,20 @@ const activeLoading = computed(() => Boolean(unref(qualityPanelRef.value?.loadin
 
 .summary-strip {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 0;
 
   span {
-    padding: 6px 10px;
-    border: 1px solid var(--gray-100);
-    border-radius: 7px;
-    background: var(--gray-10);
-    color: var(--gray-700);
-    font-size: 12px;
+    padding: 0 10px;
+    border-right: 1px solid var(--gray-150);
+    color: var(--gray-500);
+    font-size: 11px;
     line-height: 18px;
+
+    &:last-child {
+      padding-right: 0;
+      border-right: 0;
+    }
   }
 }
 </style>

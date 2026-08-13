@@ -112,19 +112,25 @@ const getSatisfactionClass = () => {
 
 /* Stats Overview Component - 统计概览组件样式 */
 .stats-overview-container {
-  margin-top: 8px;
+  margin-top: 0;
+  padding-top: 18px;
 
   .stats-grid {
     display: grid;
     padding: 0 var(--page-padding);
     grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
+    gap: 0;
+    border: 1px solid var(--gray-150);
+    border-radius: 8px;
+    background: var(--gray-0);
+    overflow: hidden;
 
     .stat-card {
-      background: var(--gray-0);
-      border-radius: 8px;
-      padding: 20px;
-      border: 1px solid var(--gray-100);
+      background: transparent;
+      border-radius: 0;
+      padding: 18px;
+      border: 0;
+      border-right: 1px solid var(--gray-100);
       transition: all 0.2s ease;
       display: flex;
       flex-direction: row;
@@ -134,8 +140,12 @@ const getSatisfactionClass = () => {
       justify-content: flex-start;
 
       &:hover {
-        border-color: var(--gray-200);
-        box-shadow: 0 1px 3px 0 var(--shadow-1);
+        background: var(--gray-25);
+        box-shadow: none;
+      }
+
+      &:last-child {
+        border-right: 0;
       }
 
       &.primary {
@@ -199,18 +209,18 @@ const getSatisfactionClass = () => {
       }
 
       .stat-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 8px;
+        width: 34px;
+        height: 34px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 16px;
+        margin-right: 12px;
         flex-shrink: 0;
 
         .icon {
-          width: 20px;
-          height: 20px;
+          width: 17px;
+          height: 17px;
         }
       }
 
@@ -221,11 +231,12 @@ const getSatisfactionClass = () => {
         align-items: flex-start;
 
         .stat-value {
-          font-size: 24px;
-          font-weight: 700;
+          font-family: 'SFMono-Regular', Consolas, monospace;
+          font-size: 20px;
+          font-weight: 650;
           color: var(--gray-1000);
           line-height: 1.1;
-          margin-bottom: 4px;
+          margin-bottom: 3px;
         }
 
         .stat-label {
@@ -270,7 +281,15 @@ const getSatisfactionClass = () => {
   .stats-overview-container {
     .stats-grid {
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 0;
+
+      .stat-card:nth-child(3n) {
+        border-right: 0;
+      }
+
+      .stat-card:nth-child(-n + 3) {
+        border-bottom: 1px solid var(--gray-100);
+      }
     }
   }
 }
@@ -279,7 +298,20 @@ const getSatisfactionClass = () => {
   .stats-overview-container {
     .stats-grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 0;
+
+      .stat-card,
+      .stat-card:nth-child(3n) {
+        border-right: 1px solid var(--gray-100);
+      }
+
+      .stat-card:nth-child(2n) {
+        border-right: 0;
+      }
+
+      .stat-card:nth-child(-n + 4) {
+        border-bottom: 1px solid var(--gray-100);
+      }
 
       .stat-card {
         padding: 16px;

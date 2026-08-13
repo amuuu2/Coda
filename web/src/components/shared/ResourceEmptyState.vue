@@ -77,15 +77,15 @@ const iconSize = computed(() => (props.size === 'compact' ? 22 : 24))
     margin-bottom: 16px;
     border: 1px solid var(--gray-150);
     border-radius: 8px;
-    background: var(--main-30);
-    color: var(--main-color);
+    background: var(--gray-25);
+    color: var(--gray-500);
   }
 
   &__title {
     margin: 0;
     color: var(--gray-900);
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 650;
     line-height: 1.35;
     letter-spacing: 0;
   }

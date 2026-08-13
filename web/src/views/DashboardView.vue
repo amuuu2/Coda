@@ -1,8 +1,14 @@
 <template>
   <div class="dashboard-container">
-    <!-- 顶部状态条 -->
+    <PageHeader title="数据总览" :loading="loading" :show-border="true">
+      <template #actions>
+        <a-button class="lucide-icon-btn" :loading="loading" @click="loadAllStats">
+          <template #icon><RefreshCw :size="15" /></template>
+          刷新数据
+        </a-button>
+      </template>
+    </PageHeader>
 
-    <!-- 现代化顶部统计栏 -->
     <div class="modern-stats-header">
       <StatusBar />
       <StatsOverviewComponent :basic-stats="basicStats" @open-feedback="handleOpenFeedback" />
@@ -69,6 +75,8 @@ import AgentStatsComponent from '@/components/dashboard/AgentStatsComponent.vue'
 import CallStatsComponent from '@/components/dashboard/CallStatsComponent.vue'
 import StatsOverviewComponent from '@/components/dashboard/StatsOverviewComponent.vue'
 import FeedbackModalComponent from '@/components/dashboard/FeedbackModalComponent.vue'
+import PageHeader from '@/components/shared/PageHeader.vue'
+import { RefreshCw } from 'lucide-vue-next'
 
 // 组件引用
 const feedbackModal = ref(null)
@@ -159,8 +167,8 @@ onUnmounted(() => {
 
 <style scoped lang="less">
 .dashboard-container {
-  background-color: var(--gray-25);
-  min-height: calc(100vh - 64px);
+  background-color: var(--gray-10);
+  min-height: 100%;
   overflow-x: hidden;
 }
 
@@ -170,8 +178,8 @@ onUnmounted(() => {
   padding: var(--page-padding);
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto auto;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 20px;
   min-height: 600px;
 
   .grid-item {
@@ -188,7 +196,7 @@ onUnmounted(() => {
       .conversations-section,
       .call-stats-section {
         border-color: var(--gray-200);
-        box-shadow: 0 1px 3px 0 var(--shadow-100);
+        box-shadow: none;
       }
     }
 
@@ -229,14 +237,14 @@ onUnmounted(() => {
 .call-stats-section {
   background-color: var(--gray-0);
   border: 1px solid var(--gray-200);
-  border-radius: 12px;
+  border-radius: 8px;
   transition: all 0.2s ease;
   box-shadow: none;
 
   &:hover {
-    background-color: var(--gray-25);
+    background-color: var(--gray-0);
     border-color: var(--gray-200);
-    box-shadow: 0 1px 3px 0 var(--shadow-100);
+    box-shadow: none;
   }
 
   :deep(.ant-card-head) {
@@ -395,7 +403,7 @@ onUnmounted(() => {
 
 @media (max-width: 768px) {
   .dashboard-container {
-    padding: 16px;
+    padding: 0;
   }
 
   .dashboard-grid {

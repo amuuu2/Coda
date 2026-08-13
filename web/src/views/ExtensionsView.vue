@@ -119,6 +119,8 @@ watch(activeTab, (tab) => {
 @import '@/assets/css/extensions.less';
 
 .extensions-view {
+  background: var(--gray-10);
+
   .extensions-content {
     flex: 1;
     min-height: 0;
@@ -127,6 +129,7 @@ watch(activeTab, (tab) => {
     .tab-panel {
       height: 100%;
       min-height: 0;
+      background: var(--gray-10);
       overflow-y: auto;
     }
   }

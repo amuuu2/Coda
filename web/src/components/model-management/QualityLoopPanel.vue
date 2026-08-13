@@ -415,7 +415,7 @@ onMounted(loadAgents)
 .step-heading { align-items: flex-start; gap: 10px; min-height: 54px; }
 .step-heading > div { min-width: 0; flex: 1; }
 .step-heading h3, .section-heading h3 { font-size: 15px; color: var(--gray-900); }
-.step-index { display: grid; place-items: center; width: 24px; height: 24px; flex: 0 0 24px; border-radius: 50%; background: var(--main-50); color: var(--main-700); font-size: 12px; font-weight: 600; }
+.step-index { display: grid; place-items: center; width: 24px; height: 24px; flex: 0 0 24px; border-radius: 5px; background: var(--gray-100); color: var(--gray-700); font-size: 12px; font-weight: 600; }
 .step-count { color: var(--gray-500); font-size: 12px; white-space: nowrap; }
 .compact-list, .candidate-list, .history-list { display: flex; flex-direction: column; }
 .compact-list, .candidate-list { margin-top: 3px; border-top: 1px solid var(--gray-100); }

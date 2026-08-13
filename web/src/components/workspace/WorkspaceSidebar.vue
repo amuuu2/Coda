@@ -118,8 +118,8 @@ const sharedDatabases = computed(() =>
   gap: 12px;
   min-width: 0;
   padding: 14px 10px;
-  border-right: 1px solid var(--gray-100);
-  background: var(--gray-0);
+  border-right: 1px solid var(--gray-150);
+  background: var(--gray-10);
   overflow-y: auto;
 }
 
@@ -132,7 +132,7 @@ const sharedDatabases = computed(() =>
 .section-title {
   padding: 4px 8px;
   color: var(--gray-500);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 20px;
 }
@@ -145,11 +145,11 @@ const sharedDatabases = computed(() =>
   min-height: 36px;
   padding: 0 10px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 6px;
   background: transparent;
   color: var(--gray-600);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   text-align: left;
   cursor: pointer;
   transition:
@@ -168,7 +168,8 @@ const sharedDatabases = computed(() =>
   &:hover:not(:disabled),
   &.active {
     border-color: transparent;
-    color: var(--main-600);
+    color: var(--gray-1000);
+    background: var(--gray-100);
   }
 
   &.secondary {

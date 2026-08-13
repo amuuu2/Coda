@@ -253,6 +253,7 @@ defineExpose({
 .agent-manage-panel {
   height: 100%;
   min-height: 0;
+  background: var(--gray-10);
 }
 
 .agent-empty-state {
@@ -260,6 +261,7 @@ defineExpose({
   align-items: center;
   justify-content: center;
   padding: 100px 20px;
+  background: var(--gray-10);
   text-align: center;
 }
 
@@ -275,7 +277,7 @@ defineExpose({
   color: var(--gray-500);
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.4px;
+  letter-spacing: 0;
   line-height: 18px;
 }
 

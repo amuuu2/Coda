@@ -394,10 +394,10 @@ defineExpose({ fetchServers, loading })
   flex-shrink: 0;
   width: 32px;
   height: 32px;
-  border-radius: 9px;
+  border-radius: 6px;
   border: 1px solid var(--gray-150);
-  background: var(--main-50);
-  color: var(--main-color);
+  background: var(--gray-25);
+  color: var(--gray-600);
   font-size: 18px;
 }
 
@@ -431,7 +431,7 @@ defineExpose({ fetchServers, loading })
   align-items: center;
   height: 18px;
   padding: 0 6px;
-  border-radius: 999px;
+  border-radius: 4px;
   background: var(--gray-100);
   color: var(--gray-600);
   font-size: 11px;
@@ -444,7 +444,7 @@ defineExpose({ fetchServers, loading })
   gap: 10px;
   padding: 14px 16px;
   border: 1px solid var(--gray-150);
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--gray-25);
 }
 

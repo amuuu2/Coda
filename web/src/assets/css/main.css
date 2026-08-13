@@ -21,17 +21,134 @@
 
 body {
   display: flow-root;
-  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--gray-900);
   background: var(--gray-0);
   line-height: 1.6;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Noto Sans SC', 'Roboto', 'HarmonyOS Sans SC', 'Segoe UI',
-    'Helvetica Neue', Arial, sans-serif;
+    'SF Pro Display', 'PingFang SC', 'HarmonyOS Sans SC', 'Microsoft YaHei', 'Helvetica Neue',
+    Arial, sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button,
+a,
+[role='button'] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--main-color) 52%, transparent);
+  outline-offset: 2px;
+}
+
+/* 后台界面的公共控件保持紧凑、平整，并复用项目主题变量。 */
+.ant-btn {
+  min-height: 34px;
+  border-radius: 6px;
+  box-shadow: none;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.ant-btn-default {
+  border-color: var(--gray-200);
+  background: var(--gray-0);
+  color: var(--gray-700);
+}
+
+.ant-btn-default:not(:disabled):hover {
+  border-color: var(--gray-300);
+  background: var(--gray-25);
+  color: var(--gray-1000);
+}
+
+.ant-btn-primary {
+  border-color: var(--gray-900);
+  background: var(--gray-900);
+  color: var(--main-0);
+  box-shadow: none;
+}
+
+.ant-btn-primary:not(:disabled):hover {
+  border-color: var(--gray-700);
+  background: var(--gray-700);
+  color: var(--main-0);
+}
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-input-number,
+.ant-picker {
+  border-color: var(--gray-200) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+.ant-input:hover,
+.ant-input-affix-wrapper:hover,
+.ant-select-selector:hover,
+.ant-input-number:hover,
+.ant-picker:hover {
+  border-color: var(--gray-300) !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector,
+.ant-input-number-focused,
+.ant-picker-focused {
+  border-color: var(--main-300) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--main-color) 9%, transparent) !important;
+}
+
+.ant-modal .ant-modal-content,
+.ant-drawer .ant-drawer-content,
+.ant-popover .ant-popover-inner,
+.ant-dropdown .ant-dropdown-menu {
+  border: 1px solid var(--gray-150);
+  border-radius: 8px;
+  background: var(--gray-0);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--gray-10000) 10%, transparent);
+}
+
+.ant-modal .ant-modal-title,
+.ant-drawer .ant-drawer-title {
+  color: var(--gray-1000);
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.ant-table-wrapper .ant-table {
+  color: var(--gray-800);
+  background: var(--gray-0);
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  background: var(--gray-25);
+  color: var(--gray-600);
+  font-size: 12px;
+  font-weight: 600;
+  border-bottom-color: var(--gray-150);
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom-color: var(--gray-100);
+}
+
+.ant-table-wrapper .ant-table-tbody > tr:hover > td {
+  background: var(--gray-25) !important;
 }
 
 /* layout */

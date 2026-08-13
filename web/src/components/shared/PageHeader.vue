@@ -60,43 +60,46 @@ function emitChange(item) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 14px var(--page-padding);
-  background-color: var(--light-60);
-  backdrop-filter: blur(10px);
+  gap: 24px;
+  min-height: 72px;
+  padding: 14px var(--page-padding) 13px;
+  background-color: color-mix(in srgb, var(--gray-0) 94%, transparent);
+  backdrop-filter: blur(12px);
   position: sticky;
   top: 0;
   z-index: 1000;
 
   &--bordered {
-    border-bottom: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--gray-150);
   }
 }
 
 .page-header-left {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  align-items: center;
+  gap: 22px;
   min-width: 0;
 }
 
 .page-header-title {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--gray-2000);
+  font-size: 21px;
+  font-weight: 650;
+  line-height: 1.2;
+  color: var(--gray-1000);
   white-space: nowrap;
 }
 
 .page-header-tabs {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding-left: 12px;
-  margin-left: 2px;
-  border-left: 1px solid var(--gray-200);
-  height: 18px;
-  line-height: 18px;
+  gap: 4px;
+  padding: 3px;
+  margin: 0;
+  border: 1px solid var(--gray-150);
+  border-radius: 7px;
+  background: var(--gray-25);
+  min-height: 34px;
   flex-shrink: 0;
 }
 
@@ -104,12 +107,12 @@ function emitChange(item) {
   display: inline-flex;
   align-items: center;
   height: 28px;
-  padding: 0 10px;
+  padding: 0 12px;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 5px;
   background: transparent;
   color: var(--gray-600);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   line-height: 1;
   text-decoration: none;
@@ -124,8 +127,10 @@ function emitChange(item) {
   }
 
   &.active {
-    color: var(--main-color);
-    background-color: color-mix(in srgb, var(--main-color) 6%, var(--gray-0));
+    color: var(--gray-1000);
+    background-color: var(--gray-0);
+    border-color: var(--gray-150);
+    font-weight: 600;
   }
 }
 
@@ -134,6 +139,32 @@ function emitChange(item) {
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .page-header {
+    min-height: auto;
+    align-items: flex-start;
+    padding-block: 12px;
+  }
+
+  .page-header-left {
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .page-header-tabs {
+    max-width: calc(100vw - 2 * var(--page-padding));
+    overflow-x: auto;
+  }
+
+  .page-header-right {
+    max-width: 50%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
 }
 
 .page-header-loading-bar-wrapper {
